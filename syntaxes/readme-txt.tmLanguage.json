@@ -1,0 +1,272 @@
+{
+	"$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+	"name": "WordPress Readme",
+	"scopeName": "text.readme-txt",
+	"patterns": [
+		{
+			"include": "#plugin-name"
+		},
+		{
+			"include": "#header-fields"
+		},
+		{
+			"include": "#section-headers"
+		},
+		{
+			"include": "#faq-questions"
+		},
+		{
+			"include": "#version-headers"
+		},
+		{
+			"include": "#markdown"
+		},
+		{
+			"include": "#links"
+		},
+		{
+			"include": "#video-urls"
+		}
+	],
+	"repository": {
+		"plugin-name": {
+			"name": "entity.name.function.readme-txt",
+			"match": "^===\\s*(.+?)\\s*===$",
+			"captures": {
+				"0": {
+					"name": "markup.heading.1.readme-txt"
+				},
+				"1": {
+					"name": "entity.name.function.plugin-name.readme-txt"
+				}
+			}
+		},
+		"header-fields": {
+			"patterns": [
+				{
+					"name": "meta.header-field.contributors.readme-txt",
+					"match": "^(Contributors):(\\s*)(.+)$",
+					"captures": {
+						"1": {
+							"name": "keyword.other.header-field.readme-txt"
+						},
+						"2": {
+							"name": "punctuation.separator.readme-txt"
+						},
+						"3": {
+							"name": "string.unquoted.contributors.readme-txt"
+						}
+					}
+				},
+				{
+					"name": "meta.header-field.donate-link.readme-txt",
+					"match": "^(Donate link):(\\s*)(.+)$",
+					"captures": {
+						"1": {
+							"name": "keyword.other.header-field.readme-txt"
+						},
+						"2": {
+							"name": "punctuation.separator.readme-txt"
+						},
+						"3": {
+							"name": "markup.underline.link.readme-txt"
+						}
+					}
+				},
+				{
+					"name": "meta.header-field.tags.readme-txt",
+					"match": "^(Tags):(\\s*)(.+)$",
+					"captures": {
+						"1": {
+							"name": "keyword.other.header-field.readme-txt"
+						},
+						"2": {
+							"name": "punctuation.separator.readme-txt"
+						},
+						"3": {
+							"name": "string.unquoted.tags.readme-txt"
+						}
+					}
+				},
+				{
+					"name": "meta.header-field.version.readme-txt",
+					"match": "^(Requires at least|Tested up to|Stable tag|Requires PHP):(\\s*)([\\d.]+)$",
+					"captures": {
+						"1": {
+							"name": "keyword.other.header-field.readme-txt"
+						},
+						"2": {
+							"name": "punctuation.separator.readme-txt"
+						},
+						"3": {
+							"name": "constant.numeric.version.readme-txt"
+						}
+					}
+				},
+				{
+					"name": "meta.header-field.license.readme-txt",
+					"match": "^(License|License URI):(\\s*)(.+)$",
+					"captures": {
+						"1": {
+							"name": "keyword.other.header-field.readme-txt"
+						},
+						"2": {
+							"name": "punctuation.separator.readme-txt"
+						},
+						"3": {
+							"name": "string.unquoted.license.readme-txt"
+						}
+					}
+				}
+			]
+		},
+		"section-headers": {
+			"name": "markup.heading.2.readme-txt",
+			"match": "^==\\s*(.+?)\\s*==$",
+			"captures": {
+				"1": {
+					"name": "entity.name.section.readme-txt"
+				}
+			}
+		},
+		"faq-questions": {
+			"name": "markup.heading.3.faq.readme-txt",
+			"match": "^=\\s*(.+?)\\s*=$",
+			"captures": {
+				"1": {
+					"name": "entity.name.function.faq-question.readme-txt"
+				}
+			}
+		},
+		"version-headers": {
+			"name": "markup.heading.3.version.readme-txt",
+			"match": "^=\\s*([\\d.]+)\\s*=$",
+			"captures": {
+				"1": {
+					"name": "constant.numeric.version.changelog.readme-txt"
+				}
+			}
+		},
+		"markdown": {
+			"patterns": [
+				{
+					"name": "markup.bold.readme-txt",
+					"match": "\\*\\*([^*]+)\\*\\*",
+					"captures": {
+						"1": {
+							"name": "markup.bold.content.readme-txt"
+						}
+					}
+				},
+				{
+					"name": "markup.italic.readme-txt",
+					"match": "\\*([^*]+)\\*",
+					"captures": {
+						"1": {
+							"name": "markup.italic.content.readme-txt"
+						}
+					}
+				},
+				{
+					"name": "markup.inline.raw.readme-txt",
+					"match": "`([^`]+)`",
+					"captures": {
+						"1": {
+							"name": "markup.inline.raw.string.readme-txt"
+						}
+					}
+				},
+				{
+					"name": "markup.fenced_code.block.readme-txt",
+					"begin": "```",
+					"end": "```",
+					"patterns": [
+						{
+							"name": "markup.raw.code.readme-txt",
+							"match": ".*"
+						}
+					]
+				},
+				{
+					"name": "markup.quote.readme-txt",
+					"match": "^>\\s*(.+)$",
+					"captures": {
+						"1": {
+							"name": "markup.quote.content.readme-txt"
+						}
+					}
+				},
+				{
+					"name": "markup.list.numbered.readme-txt",
+					"match": "^(\\d+\\.)\\s*(.+)$",
+					"captures": {
+						"1": {
+							"name": "markup.list.numbered.bullet.readme-txt"
+						},
+						"2": {
+							"name": "markup.list.numbered.content.readme-txt"
+						}
+					}
+				},
+				{
+					"name": "markup.list.unnumbered.readme-txt",
+					"match": "^([*-])\\s*(.+)$",
+					"captures": {
+						"1": {
+							"name": "markup.list.unnumbered.bullet.readme-txt"
+						},
+						"2": {
+							"name": "markup.list.unnumbered.content.readme-txt"
+						}
+					}
+				}
+			]
+		},
+		"links": {
+			"patterns": [
+				{
+					"name": "meta.link.inline.readme-txt",
+					"match": "\\[([^\\]]+)\\]\\(([^)]+)\\)",
+					"captures": {
+						"1": {
+							"name": "string.other.link.title.readme-txt"
+						},
+						"2": {
+							"name": "markup.underline.link.readme-txt"
+						}
+					}
+				},
+				{
+					"name": "markup.underline.link.bare.readme-txt",
+					"match": "https?://[^\\s)]+",
+					"captures": {
+						"0": {
+							"name": "markup.underline.link.readme-txt"
+						}
+					}
+				}
+			]
+		},
+		"video-urls": {
+			"patterns": [
+				{
+					"name": "markup.underline.link.video.youtube.readme-txt",
+					"match": "^\\s*(https?://(www\\.)?(youtube\\.com/watch\\?v=|youtu\\.be/)[a-zA-Z0-9_-]+)\\s*$"
+				},
+				{
+					"name": "markup.underline.link.video.vimeo.readme-txt",
+					"match": "^\\s*(https?://(www\\.)?vimeo\\.com/\\d+)\\s*$"
+				},
+				{
+					"name": "markup.other.videopress.readme-txt",
+					"match": "\\[wpvideo\\s+([^\\]]+)\\]",
+					"captures": {
+						"1": {
+							"name": "string.unquoted.videopress.readme-txt"
+						}
+					}
+				}
+			]
+		}
+	}
+}

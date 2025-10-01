@@ -1,0 +1,160 @@
+{
+	"name": "wordpress-readme-preview",
+	"displayName": "WordPress Readme Preview",
+	"description": "Preview WordPress readme.txt files with accurate rendering and validation",
+	"version": "0.1.0",
+	"publisher": "wordpress-readme-preview",
+	"engines": {
+		"vscode": "^1.74.0"
+	},
+	"categories": [
+		"Other",
+		"Formatters",
+		"Linters"
+	],
+	"keywords": [
+		"wordpress",
+		"readme",
+		"preview",
+		"plugin",
+		"markdown"
+	],
+	"icon": "media/icon.png",
+	"galleryBanner": {
+		"color": "#21759B",
+		"theme": "dark"
+	},
+	"activationEvents": [
+		"onLanguage:readme-txt",
+		"onCommand:wordpress-readme.showPreview",
+		"onCommand:wordpress-readme.showPreviewToSide",
+		"onWebviewPanel:wordpress-readme-preview"
+	],
+	"main": "./out/extension.js",
+	"contributes": {
+		"languages": [
+			{
+				"id": "readme-txt",
+				"aliases": [
+					"WordPress Readme",
+					"readme-txt"
+				],
+				"extensions": [
+					".txt"
+				],
+				"filenames": [
+					"readme.txt"
+				],
+				"configuration": "./language-configuration.json"
+			}
+		],
+		"grammars": [
+			{
+				"language": "readme-txt",
+				"scopeName": "text.readme-txt",
+				"path": "./syntaxes/readme-txt.tmLanguage.json"
+			}
+		],
+		"commands": [
+			{
+				"command": "wordpress-readme.showPreview",
+				"title": "Open Preview",
+				"category": "WordPress Readme",
+				"icon": "$(preview)"
+			},
+			{
+				"command": "wordpress-readme.showPreviewToSide",
+				"title": "Open Preview to the Side",
+				"category": "WordPress Readme",
+				"icon": "$(open-preview)"
+			},
+			{
+				"command": "wordpress-readme.validateReadme",
+				"title": "Validate Readme",
+				"category": "WordPress Readme",
+				"icon": "$(check)"
+			}
+		],
+		"menus": {
+			"editor/title": [
+				{
+					"command": "wordpress-readme.showPreviewToSide",
+					"when": "resourceLangId == readme-txt",
+					"group": "navigation"
+				}
+			],
+			"editor/context": [
+				{
+					"command": "wordpress-readme.showPreview",
+					"when": "resourceLangId == readme-txt",
+					"group": "navigation"
+				},
+				{
+					"command": "wordpress-readme.validateReadme",
+					"when": "resourceLangId == readme-txt",
+					"group": "navigation"
+				}
+			],
+			"commandPalette": [
+				{
+					"command": "wordpress-readme.showPreview",
+					"when": "resourceLangId == readme-txt"
+				},
+				{
+					"command": "wordpress-readme.showPreviewToSide",
+					"when": "resourceLangId == readme-txt"
+				},
+				{
+					"command": "wordpress-readme.validateReadme",
+					"when": "resourceLangId == readme-txt"
+				}
+			]
+		},
+		"configuration": {
+			"title": "WordPress Readme Preview",
+			"properties": {
+				"wordpress-readme.preview.autoOpen": {
+					"type": "boolean",
+					"default": false,
+					"description": "Automatically open preview when opening a readme.txt file"
+				},
+				"wordpress-readme.preview.syncScrolling": {
+					"type": "boolean",
+					"default": true,
+					"description": "Synchronize scrolling between editor and preview"
+				},
+				"wordpress-readme.validation.enabled": {
+					"type": "boolean",
+					"default": true,
+					"description": "Enable validation of readme.txt files"
+				},
+				"wordpress-readme.validation.showWarnings": {
+					"type": "boolean",
+					"default": true,
+					"description": "Show validation warnings"
+				}
+			}
+		}
+	},
+	"scripts": {
+		"vscode:prepublish": "npm run compile",
+		"compile": "tsc -p ./",
+		"watch": "tsc -watch -p ./",
+		"pretest": "npm run compile && npm run lint",
+		"lint": "eslint src --ext ts",
+		"test": "node ./out/test/runTest.js",
+		"package": "vsce package"
+	},
+	"devDependencies": {
+		"@types/vscode": "^1.74.0",
+		"@types/node": "16.x",
+		"@typescript-eslint/eslint-plugin": "^5.45.0",
+		"@typescript-eslint/parser": "^5.45.0",
+		"eslint": "^8.28.0",
+		"typescript": "^4.9.4",
+		"vsce": "^2.15.0"
+	},
+	"dependencies": {
+		"marked": "^4.2.5"
+	}
+}
