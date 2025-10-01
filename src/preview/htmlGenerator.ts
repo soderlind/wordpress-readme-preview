@@ -212,7 +212,15 @@ export class HtmlGenerator {
 
   private generateSection(section: ReadmeSection): string {
     const sectionId = this.generateSectionId(section.title);
-    const processedContent = WordPressMarkdownParser.parse(section.content, {
+    
+    // Process FAQ questions (= Question =) as H3 headers
+    let processedContent = section.content;
+    
+    // Convert FAQ questions to proper headers
+    processedContent = processedContent.replace(/^=\s*(.+?)\s*=$/gm, '### $1');
+    
+    // Parse markdown
+    processedContent = WordPressMarkdownParser.parse(processedContent, {
       allowVideos: true,
       allowHTML: false
     });

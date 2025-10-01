@@ -87,7 +87,11 @@ export class ReadmeParser {
       // Check for each header field
       const contributorsMatch = line.match(this.HEADER_FIELDS.CONTRIBUTORS);
       if (contributorsMatch) {
-        header.contributors = contributorsMatch[1].split(',').map(c => c.trim());
+        const contributorText = contributorsMatch[1].trim();
+        // Skip example text in parentheses
+        if (!contributorText.startsWith('(') && contributorText !== '') {
+          header.contributors = contributorText.split(',').map(c => c.trim());
+        }
         continue;
       }
 
@@ -99,7 +103,10 @@ export class ReadmeParser {
 
       const tagsMatch = line.match(this.HEADER_FIELDS.TAGS);
       if (tagsMatch) {
-        header.tags = tagsMatch[1].split(',').map(t => t.trim());
+        const tagsText = tagsMatch[1].trim();
+        if (tagsText !== '') {
+          header.tags = tagsText.split(',').map(t => t.trim());
+        }
         continue;
       }
 

@@ -27,6 +27,9 @@ export class WordPressMarkdownParser {
     
     html = processedLines.join('\n');
 
+    // Process headers (H3-H6 only, as H1-H2 are handled at section level)
+    html = this.processHeaders(html);
+
     // Process block-level elements
     html = this.processBlockquotes(html);
     html = this.processLists(html);
@@ -70,11 +73,22 @@ export class WordPressMarkdownParser {
     });
   }
 
+  private static processHeaders(html: string): string {
+    // Process H3-H6 headers (H1-H2 are handled at section level)
+    html = html.replace(/^#### (.+)$/gm, '<h4>$1</h4>');
+    html = html.replace(/^### (.+)$/gm, '<h3>$1</h3>');
+    html = html.replace(/^##### (.+)$/gm, '<h5>$1</h5>');
+    html = html.replace(/^###### (.+)$/gm, '<h6>$1</h6>');
+    
+    return html;
+  }
+
   private static processEmphasis(html: string): string {
+    // Process code first to avoid conflicts with emphasis
+    html = html.replace(this.EMPHASIS_PATTERNS.CODE, '<code>$1</code>');
     // Process bold first (** before *)
     html = html.replace(this.EMPHASIS_PATTERNS.BOLD, '<strong>$1</strong>');
     html = html.replace(this.EMPHASIS_PATTERNS.ITALIC, '<em>$1</em>');
-    html = html.replace(this.EMPHASIS_PATTERNS.CODE, '<code>$1</code>');
     
     return html;
   }
