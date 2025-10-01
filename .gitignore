@@ -72,11 +72,8 @@ public
 tmp/
 temp/
 
-# VS Code settings
+# VS Code settings (keep debugging config for extension development)
 .vscode/settings.json
-.vscode/launch.json
-.vscode/extensions.json
-.vscode/tasks.json
 
 # OS generated files
 .DS_Store
