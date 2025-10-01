@@ -21,7 +21,6 @@ A Visual Studio Code extension that provides live preview and validation for Wor
 2. **Right-click** on editor tab → "Open Preview" 
 3. **Editor toolbar** → Click preview button (📖)
 4. **Command Palette** → "WordPress Readme: Open Preview"
-5. **Keyboard shortcut** → `Ctrl+Shift+V` (Windows/Linux) or `Cmd+Shift+V` (Mac)
 
 ### Validation
 
@@ -105,9 +104,6 @@ Customize the extension behavior via VS Code settings:
   // Auto-open preview when opening readme.txt files
   "wordpress-readme.preview.autoOpen": false,
   
-  // Synchronize scrolling between editor and preview
-  "wordpress-readme.preview.syncScrolling": true,
-  
   // Enable automatic validation as you type
   "wordpress-readme.validation.enabled": true,
   
@@ -118,11 +114,11 @@ Customize the extension behavior via VS Code settings:
 
 ## Available Commands
 
-| Command | Keyboard Shortcut | Description |
-|---------|-------------------|-------------|
-| `WordPress Readme: Open Preview` | `Ctrl+Shift+V` | Open preview in current editor group |
-| `WordPress Readme: Open Preview to the Side` | - | Open side-by-side preview |
-| `WordPress Readme: Validate Readme` | - | Run validation and show detailed results |
+| Command | Access Method | Description |
+|---------|---------------|-------------|
+| `WordPress Readme: Open Preview` | Command Palette, Context Menu | Open preview in current editor group |
+| `WordPress Readme: Open Preview to the Side` | Toolbar, Context Menu | Open side-by-side preview |
+| `WordPress Readme: Validate Readme` | Context Menu, Command Palette | Run validation and show detailed results |
 
 ## Context Menu Integration
 

@@ -152,11 +152,6 @@
 					"default": false,
 					"description": "Automatically open preview when opening a readme.txt file"
 				},
-				"wordpress-readme.preview.syncScrolling": {
-					"type": "boolean",
-					"default": true,
-					"description": "Synchronize scrolling between editor and preview"
-				},
 				"wordpress-readme.validation.enabled": {
 					"type": "boolean",
 					"default": true,
