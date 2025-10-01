@@ -42,9 +42,8 @@ export class ReadmeParser {
     LICENSE_URI: /^License URI:\s*(.+)$/i
   };
 
-  private static readonly SECTION_HEADER = /^==\s*(.+?)\s*==$/;
-
-  public static parse(content: string): ParsedReadme {
+    // Define section patterns - match exactly 2 equals signs (not 3)  
+    private static readonly SECTION_HEADER = /^==\s+(.+?)\s+==$/;  public static parse(content: string): ParsedReadme {
     const lines = content.split('\n');
     const result: ParsedReadme = {
       header: this.parseHeader(lines),

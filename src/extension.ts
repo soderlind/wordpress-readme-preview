@@ -7,6 +7,10 @@ import { ReadmeValidator } from './parser/validator';
 export function activate(context: vscode.ExtensionContext) {
   console.log('WordPress Readme Preview extension activated');
 
+  // Create output channel for debugging
+  const outputChannel = vscode.window.createOutputChannel('WordPress Readme Debug');
+  context.subscriptions.push(outputChannel);
+
   // Create HTML generator and preview provider
   const htmlGenerator = new HtmlGenerator(context);
   const previewProvider = new ReadmePreviewProvider(context, htmlGenerator);
@@ -29,7 +33,7 @@ export function activate(context: vscode.ExtensionContext) {
   const validateReadmeCommand = vscode.commands.registerCommand(
     'wordpress-readme.validateReadme',
     async (uri?: vscode.Uri) => {
-      await validateReadmeFile(uri);
+      await validateReadmeFile(uri, outputChannel);
     }
   );
 
@@ -97,7 +101,8 @@ export function activate(context: vscode.ExtensionContext) {
     onDidChangeTextDocument,
     readmeLanguageConfig,
     statusBarItem,
-    previewProvider
+    previewProvider,
+    diagnosticCollection
   );
 
   // Show welcome message for first-time users
@@ -152,7 +157,7 @@ Answer to the question.
   }
 }
 
-async function validateReadmeFile(uri?: vscode.Uri): Promise<void> {
+async function validateReadmeFile(uri?: vscode.Uri, outputChannel?: vscode.OutputChannel): Promise<void> {
   const resource = uri || vscode.window.activeTextEditor?.document.uri;
   if (!resource) {
     vscode.window.showWarningMessage('No readme.txt file is currently open.');
@@ -169,6 +174,12 @@ async function validateReadmeFile(uri?: vscode.Uri): Promise<void> {
     const content = document.getText();
     const parsed = ReadmeParser.parse(content);
     const validation = ReadmeValidator.validate(parsed);
+    
+    // Test the exact parsing logic
+    const lines = content.split('\n');
+    const contributorsLine = lines[1].trim(); // "Contributors: PerS"
+    
+
 
     // Show validation results
     const errorCount = validation.errors.filter(e => e.type === 'error').length;
@@ -196,14 +207,27 @@ async function validateReadmeFile(uri?: vscode.Uri): Promise<void> {
   }
 }
 
+// Create diagnostic collection once and reuse it
+const diagnosticCollection = vscode.languages.createDiagnosticCollection('wordpress-readme');
+
 function showDiagnostics(document: vscode.TextDocument, validation: any): void {
   const diagnostics: vscode.Diagnostic[] = [];
-  const collection = vscode.languages.createDiagnosticCollection('wordpress-readme');
 
   validation.errors.forEach((error: any) => {
-    const range = error.line 
-      ? new vscode.Range(error.line - 1, 0, error.line - 1, 999)
-      : new vscode.Range(0, 0, 0, 999);
+    // Use actual line number if available, otherwise default to line 1
+    const lineNumber = error.line ? error.line - 1 : 0;
+    const lineLength = document.lineAt(lineNumber).text.length;
+    
+    // Use column information if available for precise positioning
+    const startColumn = error.column || 0;
+    const endColumn = error.endColumn || Math.max(lineLength, 1);
+    
+    const range = new vscode.Range(
+      lineNumber, 
+      startColumn, 
+      lineNumber, 
+      endColumn
+    );
 
     const diagnostic = new vscode.Diagnostic(
       range,
@@ -215,7 +239,8 @@ function showDiagnostics(document: vscode.TextDocument, validation: any): void {
     diagnostics.push(diagnostic);
   });
 
-  collection.set(document.uri, diagnostics);
+  // Replace all diagnostics for this file (not append)
+  diagnosticCollection.set(document.uri, diagnostics);
 }
 
 function isReadmeFile(document: vscode.TextDocument): boolean {

@@ -95,6 +95,40 @@
 					"group": "navigation"
 				}
 			],
+			"explorer/context": [
+				{
+					"command": "wordpress-readme.showPreview",
+					"when": "resourceFilename == readme.txt",
+					"group": "navigation@1"
+				},
+				{
+					"command": "wordpress-readme.showPreviewToSide",
+					"when": "resourceFilename == readme.txt",
+					"group": "navigation@2"
+				},
+				{
+					"command": "wordpress-readme.validateReadme",
+					"when": "resourceFilename == readme.txt",
+					"group": "navigation@3"
+				}
+			],
+			"editor/title/context": [
+				{
+					"command": "wordpress-readme.showPreview",
+					"when": "resourceFilename == readme.txt",
+					"group": "navigation@1"
+				},
+				{
+					"command": "wordpress-readme.showPreviewToSide",
+					"when": "resourceFilename == readme.txt",
+					"group": "navigation@2"
+				},
+				{
+					"command": "wordpress-readme.validateReadme",
+					"when": "resourceFilename == readme.txt",
+					"group": "navigation@3"
+				}
+			],
 			"commandPalette": [
 				{
 					"command": "wordpress-readme.showPreview",

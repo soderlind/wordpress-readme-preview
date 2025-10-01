@@ -92,7 +92,7 @@ export class HtmlGenerator {
           ${this.escapeHtml(error.message)}
           ${error.field ? `<span class="field-name">(${error.field})</span>` : ''}
         </div>
-        ${error.suggestion ? `<div class="validation-suggestion">${this.escapeHtml(error.suggestion)}</div>` : ''}
+        ${error.suggestion ? `<div class="validation-suggestion">→ ${this.escapeHtml(error.suggestion)}</div>` : ''}
       </div>
     `).join('');
 
@@ -207,7 +207,23 @@ export class HtmlGenerator {
       return '<div class="no-sections">No sections found</div>';
     }
 
-    return sections.map(section => this.generateSection(section)).join('');
+    // Filter out sections that contain header information
+    const contentSections = sections.filter(section => {
+      // Skip sections that are just the plugin name
+      if (section.title === 'Plugin Name') {
+        return false;
+      }
+      
+      // Skip sections that contain header-like content (Contributors:, Tags:, etc.)
+      const content = section.content.toLowerCase();
+      const hasHeaderFields = content.includes('contributors:') && 
+                             content.includes('donate link:') && 
+                             content.includes('tags:');
+      
+      return !hasHeaderFields;
+    });
+
+    return contentSections.map(section => this.generateSection(section)).join('');
   }
 
   private generateSection(section: ReadmeSection): string {

@@ -12,6 +12,8 @@ export interface ValidationError {
   field?: string;
   message: string;
   line?: number;
+  column?: number;
+  endColumn?: number;
   suggestion?: string;
 }
 
@@ -49,7 +51,7 @@ export class ReadmeValidator {
     const warnings: ValidationWarning[] = [];
 
     // Header validation
-    this.validateHeader(readme.header, errors, warnings);
+    this.validateHeader(readme.header, errors, warnings, readme.rawContent);
 
     // Sections validation
     this.validateSections(readme.sections, errors, warnings);
@@ -70,7 +72,7 @@ export class ReadmeValidator {
     };
   }
 
-  private static validateHeader(header: ReadmeHeader, errors: ValidationError[], warnings: ValidationWarning[]): void {
+  private static validateHeader(header: ReadmeHeader, errors: ValidationError[], warnings: ValidationWarning[], rawContent: string): void {
     // Required fields
     this.REQUIRED_FIELDS.forEach(field => {
       const value = header[field];
@@ -345,28 +347,57 @@ export class ReadmeValidator {
   }
 
   private static validateContent(readme: ParsedReadme, errors: ValidationError[], warnings: ValidationWarning[]): void {
-    // Check for common WordPress.org issues
-    const content = readme.rawContent.toLowerCase();
+    const lines = readme.rawContent.split('\n');
     
-    // Check for promotional language
-    const promotionalWords = ['best', 'ultimate', 'premium', 'pro', 'advanced', 'professional'];
+    // Check for promotional language - use word boundaries to avoid false positives
+    const promotionalWords = ['best', 'ultimate', 'premium', 'advanced', 'professional'];
     promotionalWords.forEach(word => {
-      if (content.includes(word)) {
+      const wordPattern = new RegExp(`\\b${word}\\b`, 'gi');
+      lines.forEach((line, index) => {
+        let match;
+        while ((match = wordPattern.exec(line)) !== null) {
+          warnings.push({
+            type: 'warning',
+            message: `Consider avoiding promotional language like "${word}"`,
+            line: index + 1,
+            column: match.index,
+            endColumn: match.index + match[0].length,
+            suggestion: 'Focus on functionality rather than marketing terms'
+          });
+        }
+      });
+    });
+
+    // Special case for "pro" - only flag if it appears as standalone word or in certain contexts
+    const proPattern = /\b(pro\s+version|pro\s+edition|go\s+pro|\bpro\b(?!\w))/gi;
+    lines.forEach((line, index) => {
+      let match;
+      while ((match = proPattern.exec(line)) !== null) {
         warnings.push({
           type: 'warning',
-          message: `Consider avoiding promotional language like "${word}"`,
+          message: 'Consider avoiding promotional language like "pro"',
+          line: index + 1,
+          column: match.index,
+          endColumn: match.index + match[0].length,
           suggestion: 'Focus on functionality rather than marketing terms'
         });
       }
     });
 
-    // Check for contact information in inappropriate places
-    if (content.includes('email') || content.includes('@')) {
-      warnings.push({
-        type: 'warning',
-        message: 'Avoid including email addresses in readme, use WordPress.org support forums instead'
-      });
-    }
+    // Check for actual email addresses, not just the word "email"
+    const emailPattern = /\b[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}\b/g;
+    lines.forEach((line, index) => {
+      let match;
+      while ((match = emailPattern.exec(line)) !== null) {
+        warnings.push({
+          type: 'warning',
+          message: 'Avoid including email addresses in readme, use WordPress.org support forums instead',
+          line: index + 1,
+          column: match.index,
+          endColumn: match.index + match[0].length
+        });
+      }
+    });
   }
 
   private static validateFileSize(content: string, warnings: ValidationWarning[]): void {

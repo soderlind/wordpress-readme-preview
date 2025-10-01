@@ -84,8 +84,10 @@ export class WordPressMarkdownParser {
   }
 
   private static processEmphasis(html: string): string {
-    // Process code first to avoid conflicts with emphasis
-    html = html.replace(this.EMPHASIS_PATTERNS.CODE, '<code>$1</code>');
+    // Process code first to avoid conflicts with emphasis - need to escape HTML in code
+    html = html.replace(this.EMPHASIS_PATTERNS.CODE, (match, code) => {
+      return `<code>${this.escapeHtml(code)}</code>`;
+    });
     // Process bold first (** before *)
     html = html.replace(this.EMPHASIS_PATTERNS.BOLD, '<strong>$1</strong>');
     html = html.replace(this.EMPHASIS_PATTERNS.ITALIC, '<em>$1</em>');
