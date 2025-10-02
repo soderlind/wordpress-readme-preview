@@ -255,6 +255,12 @@ Tested up to: 6.3
 💡 **Feature Requests:** Suggest improvements for WordPress.org compliance  
 🔧 **Pull Requests:** Contributions welcome for parser and validation improvements  
 
-## License
+# Copyright and License
 
-MIT License - Free for personal and commercial use.
+WordPress Readme Preview is copyright 2025 Per Soderlind
+
+WordPress Readme Preview is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 2 of the License, or (at your option) any later version.
+
+WordPress Readme Preview is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+
+You should have received a copy of the GNU Lesser General Public License along with the Extension. If not, see http://www.gnu.org/licenses/.

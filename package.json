@@ -19,6 +19,7 @@
 		"plugin",
 		"markdown"
 	],
+	"license": "GPL-2.0-or-later",
 	"icon": "media/icon.png",
 	"galleryBanner": {
 		"color": "#21759B",
