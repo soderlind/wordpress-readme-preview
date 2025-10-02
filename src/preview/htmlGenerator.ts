@@ -42,6 +42,15 @@ export class HtmlGenerator {
               media-src ${webview.cspSource} https:;">
         <title>WordPress Readme Preview</title>
         <link href="${styleUri}" rel="stylesheet">
+        <script nonce="${nonce}">
+          // Theme detection - must run immediately to prevent flashing
+          (function() {
+            const theme = document.body.getAttribute('data-vscode-theme-kind') || 
+                         document.body.getAttribute('data-vscode-theme-name') || 
+                         'vscode-light';
+            document.documentElement.setAttribute('data-vscode-theme-kind', theme);
+          })();
+        </script>
       </head>
       <body>
         <div class="readme-preview">

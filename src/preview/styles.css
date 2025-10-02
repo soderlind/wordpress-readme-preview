@@ -1,8 +1,10 @@
 /* WordPress.org-inspired styling for readme preview */
 
 :root {
+	/* WordPress.org colors */
 	--wp-blue: #0073aa;
 	--wp-blue-dark: #005177;
+	--wp-blue-light: #2271b1;
 	--wp-gray: #646970;
 	--wp-gray-light: #f0f0f1;
 	--wp-gray-dark: #3c434a;
@@ -10,15 +12,88 @@
 	--wp-orange: #ff922b;
 	--wp-green: #00a32a;
 
-	/* VS Code theme integration */
+	/* Light theme defaults */
 	--bg-color: var(--vscode-editor-background, #ffffff);
 	--text-color: var(--vscode-editor-foreground, #1e1e1e);
+	--secondary-text: var(--vscode-descriptionForeground, #646970);
 	--border-color: var(--vscode-panel-border, #e1e1e1);
+	--hover-bg: var(--vscode-list-hoverBackground, #f3f3f3);
+	--active-bg: var(--vscode-list-activeSelectionBackground, #0078d4);
 	--link-color: var(--vscode-textLink-foreground, var(--wp-blue));
+	--link-hover: var(--vscode-textLink-activeForeground, var(--wp-blue-dark));
+
+	/* Code and content backgrounds */
 	--code-bg: var(--vscode-textCodeBlock-background, #f6f8fa);
+	--code-border: var(--vscode-textPreformat-foreground, #e1e4e8);
+	--header-bg: var(--vscode-editorGroupHeader-tabsBackground, #f8f9fa);
+	--section-bg: var(--vscode-editor-background, transparent);
+
+	/* Validation colors */
 	--warning-bg: var(--vscode-inputValidation-warningBackground, #fff3cd);
+	--warning-border: var(--vscode-inputValidation-warningBorder, #ffeaa7);
 	--error-bg: var(--vscode-inputValidation-errorBackground, #f8d7da);
+	--error-border: var(--vscode-inputValidation-errorBorder, #f5c6cb);
 	--success-bg: var(--vscode-inputValidation-infoBackground, #d1ecf1);
+	--success-border: var(--vscode-inputValidation-infoBorder, #bee5eb);
+
+	/* Shadow and overlay */
+	--shadow-light: rgba(0, 0, 0, 0.1);
+	--shadow-medium: rgba(0, 0, 0, 0.15);
+	--overlay-light: rgba(0, 0, 0, 0.05);
+	--overlay-medium: rgba(0, 0, 0, 0.1);
+}
+
+/* Dark theme overrides */
+[data-vscode-theme-kind="vscode-dark"],
+[data-vscode-theme-kind="vscode-high-contrast-dark"] {
+	/* Lighter blue colors for better contrast on dark backgrounds */
+	--wp-blue: #4fc3f7;
+	--wp-blue-dark: #81d4fa;
+	--wp-blue-light: #29b6f6;
+
+	--wp-gray-light: #2d2d30;
+	--wp-gray-dark: #cccccc;
+	--secondary-text: #9d9d9d;
+	--hover-bg: #2a2d2e;
+	--header-bg: #252526;
+	--code-bg: #0d1117;
+	--code-border: #30363d;
+
+	/* Adjusted validation colors for dark theme */
+	--warning-bg: rgba(255, 146, 43, 0.15);
+	--warning-border: rgba(255, 146, 43, 0.3);
+	--error-bg: rgba(214, 54, 56, 0.15);
+	--error-border: rgba(214, 54, 56, 0.3);
+	--success-bg: rgba(0, 163, 42, 0.15);
+	--success-border: rgba(0, 163, 42, 0.3);
+
+	/* Dark theme shadows and overlays */
+	--shadow-light: rgba(0, 0, 0, 0.3);
+	--shadow-medium: rgba(0, 0, 0, 0.5);
+	--overlay-light: rgba(255, 255, 255, 0.05);
+	--overlay-medium: rgba(255, 255, 255, 0.1);
+}
+
+/* Dark theme code block enhancements */
+[data-vscode-theme-kind="vscode-dark"] .section-content code,
+[data-vscode-theme-kind="vscode-high-contrast-dark"] .section-content code {
+	background: #161b22;
+	border-color: #21262d;
+	color: #e6edf3;
+}
+
+[data-vscode-theme-kind="vscode-dark"] .section-content pre,
+[data-vscode-theme-kind="vscode-high-contrast-dark"] .section-content pre {
+	background: #0d1117;
+	border-color: #21262d;
+	color: #e6edf3;
+}
+
+/* High contrast theme adjustments */
+[data-vscode-theme-kind="vscode-high-contrast"],
+[data-vscode-theme-kind="vscode-high-contrast-dark"] {
+	--border-color: var(--vscode-contrastBorder, #6fc3df);
+	--code-border: var(--vscode-contrastBorder, #6fc3df);
 }
 
 body {
@@ -81,18 +156,19 @@ body {
 }
 
 .validation-details {
-	border-top: 1px solid rgba(0, 0, 0, 0.1);
+	border-top: 1px solid var(--border-color);
 }
 
 .validation-details details>summary {
 	padding: 8px 16px;
 	cursor: pointer;
 	font-weight: 500;
-	background: rgba(0, 0, 0, 0.05);
+	background: var(--overlay-light);
+	color: var(--text-color);
 }
 
 .validation-details details>summary:hover {
-	background: rgba(0, 0, 0, 0.1);
+	background: var(--hover-bg);
 }
 
 .validation-items {
@@ -101,7 +177,8 @@ body {
 
 .validation-item {
 	padding: 8px 16px;
-	border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+	border-bottom: 1px solid var(--border-color);
+	color: var(--text-color);
 }
 
 .validation-item:last-child {
@@ -109,11 +186,13 @@ body {
 }
 
 .validation-item.error {
-	background: rgba(214, 54, 56, 0.1);
+	background: var(--error-bg);
+	border-left: 3px solid var(--wp-red);
 }
 
 .validation-item.warning {
-	background: rgba(255, 146, 43, 0.1);
+	background: var(--warning-bg);
+	border-left: 3px solid var(--wp-orange);
 }
 
 .validation-message {
@@ -129,18 +208,18 @@ body {
 
 .validation-suggestion {
 	font-size: 13px;
-	opacity: 0.8;
+	color: var(--secondary-text);
 	font-style: italic;
 	margin-left: 20px !important;
 	margin-top: 4px;
 	padding-left: 16px;
-	border-left: 2px solid #ddd;
+	border-left: 2px solid var(--border-color);
 	display: block;
 }
 
 /* Plugin Header */
 .plugin-header {
-	background: var(--wp-gray-light);
+	background: var(--header-bg);
 	border: 1px solid var(--border-color);
 	border-radius: 8px;
 	padding: 24px;
@@ -149,7 +228,7 @@ body {
 
 .plugin-header.has-errors {
 	border-color: var(--wp-red);
-	background: rgba(214, 54, 56, 0.05);
+	background: var(--error-bg);
 }
 
 .plugin-name {
@@ -180,7 +259,7 @@ body {
 
 .meta-item label {
 	font-weight: 600;
-	color: var(--wp-gray-dark);
+	color: var(--secondary-text);
 	white-space: nowrap;
 }
 
@@ -195,6 +274,7 @@ body {
 }
 
 .meta-item a:hover {
+	color: var(--link-hover);
 	text-decoration: underline;
 }
 
@@ -235,7 +315,7 @@ body {
 	border-top: 1px solid var(--border-color);
 	font-size: 16px;
 	line-height: 1.5;
-	color: var(--wp-gray-dark);
+	color: var(--text-color);
 }
 
 /* Sections */
@@ -261,14 +341,14 @@ body {
 	font-size: 18px;
 	font-weight: 600;
 	margin: 24px 0 12px 0;
-	color: var(--wp-gray-dark);
+	color: var(--text-color);
 }
 
 .section-content h4 {
 	font-size: 16px;
 	font-weight: 600;
 	margin: 20px 0 8px 0;
-	color: var(--wp-gray-dark);
+	color: var(--text-color);
 }
 
 .section-content p {
@@ -291,28 +371,37 @@ body {
 }
 
 .section-content a:hover {
+	color: var(--link-hover);
 	text-decoration: underline;
 }
 
 .section-content code {
 	background: var(--code-bg);
-	padding: 2px 6px;
-	border-radius: 3px;
-	font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
+	color: var(--vscode-textPreformat-foreground, var(--text-color));
+	border: 1px solid var(--code-border);
+	padding: 3px 6px;
+	border-radius: 4px;
+	font-family: var(--vscode-editor-font-family, 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace);
 	font-size: 13px;
+	font-weight: 500;
 }
 
 .section-content pre {
 	background: var(--code-bg);
+	color: var(--vscode-textPreformat-foreground, var(--text-color));
+	border: 1px solid var(--code-border);
 	padding: 16px;
 	border-radius: 6px;
 	overflow-x: auto;
 	margin: 16px 0;
+	box-shadow: inset 0 1px 3px var(--shadow-light);
 }
 
 .section-content pre code {
 	background: none;
 	padding: 0;
+	border: none;
+	font-weight: normal;
 }
 
 .section-content blockquote {
@@ -320,7 +409,10 @@ body {
 	margin: 16px 0;
 	padding-left: 16px;
 	font-style: italic;
-	color: var(--wp-gray);
+	color: var(--secondary-text);
+	background: var(--overlay-light);
+	padding: 12px 16px;
+	border-radius: 0 4px 4px 0;
 }
 
 .section-content strong {
@@ -341,17 +433,20 @@ body {
 	max-width: 100%;
 	height: auto;
 	border-radius: 6px;
-	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+	box-shadow: 0 4px 12px var(--shadow-medium);
+	border: 1px solid var(--border-color);
 }
 
 /* FAQ Section specific styling */
 .readme-section:has(.section-title:contains('FAQ')) .section-content h3,
 .readme-section:has(.section-title:contains('Frequently Asked Questions')) .section-content h3 {
-	background: var(--wp-gray-light);
+	background: var(--header-bg);
+	border: 1px solid var(--border-color);
 	padding: 8px 12px;
 	border-radius: 4px;
 	margin: 16px 0 8px 0;
 	font-size: 16px;
+	color: var(--text-color);
 }
 
 /* Changelog section specific styling */
@@ -397,7 +492,7 @@ body {
 .no-sections {
 	text-align: center;
 	padding: 40px 20px;
-	color: var(--wp-gray);
+	color: var(--secondary-text);
 	font-style: italic;
 }
 

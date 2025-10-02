@@ -86,46 +86,46 @@
 			"editor/context": [
 				{
 					"command": "wordpress-readme.showPreview",
-					"when": "resourceLangId == readme-txt",
+					"when": "resourceLangId == readme-txt && config.wordpress-readme.contextMenu.showInEditor && config.wordpress-readme.contextMenu.showPreview",
 					"group": "navigation"
 				},
 				{
 					"command": "wordpress-readme.validateReadme",
-					"when": "resourceLangId == readme-txt",
+					"when": "resourceLangId == readme-txt && config.wordpress-readme.contextMenu.showInEditor && config.wordpress-readme.contextMenu.showValidation",
 					"group": "navigation"
 				}
 			],
 			"explorer/context": [
 				{
 					"command": "wordpress-readme.showPreview",
-					"when": "resourceFilename == readme.txt",
+					"when": "resourceFilename == readme.txt && config.wordpress-readme.contextMenu.showInExplorer && config.wordpress-readme.contextMenu.showPreview",
 					"group": "navigation@1"
 				},
 				{
 					"command": "wordpress-readme.showPreviewToSide",
-					"when": "resourceFilename == readme.txt",
+					"when": "resourceFilename == readme.txt && config.wordpress-readme.contextMenu.showInExplorer && config.wordpress-readme.contextMenu.showPreviewToSide",
 					"group": "navigation@2"
 				},
 				{
 					"command": "wordpress-readme.validateReadme",
-					"when": "resourceFilename == readme.txt",
+					"when": "resourceFilename == readme.txt && config.wordpress-readme.contextMenu.showInExplorer && config.wordpress-readme.contextMenu.showValidation",
 					"group": "navigation@3"
 				}
 			],
 			"editor/title/context": [
 				{
 					"command": "wordpress-readme.showPreview",
-					"when": "resourceFilename == readme.txt",
+					"when": "resourceFilename == readme.txt && config.wordpress-readme.contextMenu.showInEditorTab && config.wordpress-readme.contextMenu.showPreview",
 					"group": "navigation@1"
 				},
 				{
 					"command": "wordpress-readme.showPreviewToSide",
-					"when": "resourceFilename == readme.txt",
+					"when": "resourceFilename == readme.txt && config.wordpress-readme.contextMenu.showInEditorTab && config.wordpress-readme.contextMenu.showPreviewToSide",
 					"group": "navigation@2"
 				},
 				{
 					"command": "wordpress-readme.validateReadme",
-					"when": "resourceFilename == readme.txt",
+					"when": "resourceFilename == readme.txt && config.wordpress-readme.contextMenu.showInEditorTab && config.wordpress-readme.contextMenu.showValidation",
 					"group": "navigation@3"
 				}
 			],
@@ -152,6 +152,11 @@
 					"default": false,
 					"description": "Automatically open preview when opening a readme.txt file"
 				},
+				"wordpress-readme.preview.syncScrolling": {
+					"type": "boolean",
+					"default": true,
+					"description": "Synchronize scrolling between editor and preview"
+				},
 				"wordpress-readme.validation.enabled": {
 					"type": "boolean",
 					"default": true,
@@ -161,14 +166,46 @@
 					"type": "boolean",
 					"default": true,
 					"description": "Show validation warnings"
+				},
+				"wordpress-readme.contextMenu.showInExplorer": {
+					"type": "boolean",
+					"default": true,
+					"description": "Show WordPress Readme commands in file explorer context menu"
+				},
+				"wordpress-readme.contextMenu.showInEditorTab": {
+					"type": "boolean",
+					"default": true,
+					"description": "Show WordPress Readme commands in editor tab context menu"
+				},
+				"wordpress-readme.contextMenu.showInEditor": {
+					"type": "boolean",
+					"default": true,
+					"description": "Show WordPress Readme commands in editor content context menu"
+				},
+				"wordpress-readme.contextMenu.showPreview": {
+					"type": "boolean",
+					"default": true,
+					"description": "Show 'Open Preview' command in context menus"
+				},
+				"wordpress-readme.contextMenu.showPreviewToSide": {
+					"type": "boolean",
+					"default": true,
+					"description": "Show 'Open Preview to the Side' command in context menus"
+				},
+				"wordpress-readme.contextMenu.showValidation": {
+					"type": "boolean",
+					"default": true,
+					"description": "Show 'Validate Readme' command in context menus"
 				}
 			}
 		}
 	},
 	"scripts": {
 		"vscode:prepublish": "npm run compile",
-		"compile": "tsc -p ./",
-		"watch": "tsc -watch -p ./",
+		"compile": "npm run compile:ts && npm run copy:assets",
+		"compile:ts": "tsc -p ./",
+		"copy:assets": "mkdir -p out/preview && cp src/preview/*.js src/preview/*.css out/preview/ 2>/dev/null || true",
+		"watch": "npm run compile && tsc -watch -p ./",
 		"pretest": "npm run compile && npm run lint",
 		"lint": "eslint src --ext ts",
 		"test": "node ./out/test/runTest.js",

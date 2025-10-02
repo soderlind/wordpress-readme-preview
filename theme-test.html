@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="UTF-8">
+	<title>Theme Test</title>
+	<style>
+		/* Test the CSS custom properties */
+		:root {
+			--test-bg: var(--vscode-editor-background, #ffffff);
+			--test-text: var(--vscode-editor-foreground, #000000);
+		}
+
+		[data-vscode-theme-kind="vscode-dark"] {
+			--test-bg: #1e1e1e;
+			--test-text: #d4d4d4;
+		}
+
+		body {
+			background: var(--test-bg);
+			color: var(--test-text);
+			font-family: sans-serif;
+			padding: 20px;
+		}
+
+		.theme-info {
+			padding: 10px;
+			border: 1px solid currentColor;
+			border-radius: 4px;
+			margin: 10px 0;
+		}
+	</style>
+</head>
+
+<body>
+	<h1>Theme Detection Test</h1>
+	<div class="theme-info">
+		<p>Current theme: <span id="theme-name">Unknown</span></p>
+		<p>Background: <span id="bg-color"></span></p>
+		<p>Text color: <span id="text-color"></span></p>
+	</div>
+
+	<script>
+		function updateThemeInfo() {
+			const theme = document.documentElement.getAttribute('data-vscode-theme-kind') || 'none';
+			const bgColor = getComputedStyle(document.body).backgroundColor;
+			const textColor = getComputedStyle(document.body).color;
+
+			document.getElementById('theme-name').textContent = theme;
+			document.getElementById('bg-color').textContent = bgColor;
+			document.getElementById('text-color').textContent = textColor;
+		}
+
+		// Simulate theme changes
+		document.addEventListener('click', function () {
+			const current = document.documentElement.getAttribute('data-vscode-theme-kind');
+			const newTheme = current === 'vscode-dark' ? 'vscode-light' : 'vscode-dark';
+			document.documentElement.setAttribute('data-vscode-theme-kind', newTheme);
+			updateThemeInfo();
+		});
+
+		updateThemeInfo();
+	</script>
+</body>
+
+</html>

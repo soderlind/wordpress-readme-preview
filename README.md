@@ -9,6 +9,8 @@ A Visual Studio Code extension that provides live preview and validation for Wor
 ✅ **Syntax Highlighting** - Enhanced editing experience for readme.txt files  
 ✅ **Smart Error Detection** - Inline highlighting with exact column positioning  
 ✅ **Context Menus** - Right-click support in explorer and editor tabs  
+✅ **Scroll Synchronization** - Keep editor and preview in sync when scrolling  
+✅ **Theme Support** - Automatic dark/light theme matching with VS Code  
 ✅ **Quality Scoring** - Get 0-100 quality score with improvement suggestions  
 ✅ **False Positive Prevention** - Accurate detection without hallucinated errors  
 
@@ -40,6 +42,7 @@ A Visual Studio Code extension that provides live preview and validation for Wor
 - **Right-click** → "Open Preview to the Side"
 - **Editor toolbar** → "Open Preview to the Side" button
 - **Command Palette** → "WordPress Readme: Open Preview to the Side"
+- **Scroll Synchronization** - Automatically keeps editor and preview scrolled to the same position
 
 ## Validation Features
 
@@ -94,6 +97,7 @@ A Visual Studio Code extension that provides live preview and validation for Wor
 - Proper HTML escaping for security
 - Responsive design for different screen sizes
 - WordPress.org color scheme and typography
+- **Auto Theme Matching** - Seamlessly adapts to VS Code's dark/light theme
 
 ## Configuration
 
@@ -104,13 +108,34 @@ Customize the extension behavior via VS Code settings:
   // Auto-open preview when opening readme.txt files
   "wordpress-readme.preview.autoOpen": false,
   
+  // Enable scroll synchronization between editor and preview
+  "wordpress-readme.preview.syncScrolling": true,
+  
   // Enable automatic validation as you type
   "wordpress-readme.validation.enabled": true,
   
   // Show validation warnings (not just errors)
-  "wordpress-readme.validation.showWarnings": true
+  "wordpress-readme.validation.showWarnings": true,
+  
+  // Context menu configuration - enable/disable individual menu items
+  "wordpress-readme.contextMenu.openPreview": true,
+  "wordpress-readme.contextMenu.openPreviewToSide": true,
+  "wordpress-readme.contextMenu.validate": true,
+  "wordpress-readme.contextMenu.openFile": true,
+  "wordpress-readme.contextMenu.separator1": true,
+  "wordpress-readme.contextMenu.separator2": true
 }
 ```
+
+### Context Menu Customization
+
+You can customize which context menu items appear by adjusting the `wordpress-readme.contextMenu.*` settings:
+
+- `openPreview` - Show "Open Preview" option
+- `openPreviewToSide` - Show "Open Preview to the Side" option  
+- `validate` - Show "Validate Readme" option
+- `openFile` - Show "Open File" option
+- `separator1` / `separator2` - Show menu separators for organization
 
 ## Available Commands
 
@@ -128,6 +153,38 @@ Customize the extension behavior via VS Code settings:
 - **Editor Content** - Right-click inside the editor
 
 All context menus provide instant access to preview and validation commands.
+
+## Scroll Synchronization
+
+**Seamless Navigation:**
+- **Automatic Syncing** - Editor and preview panels stay synchronized while scrolling
+- **Bidirectional** - Scroll in either the editor or preview to sync both
+- **Configurable** - Enable/disable via `wordpress-readme.preview.syncScrolling` setting
+- **Smooth Performance** - Optimized for responsive scrolling without lag
+- **Side-by-Side Mode** - Works perfectly when preview is opened to the side
+
+**How it works:**
+1. Open preview to the side for best experience
+2. Scroll in the editor → preview follows automatically  
+3. Scroll in the preview → editor follows automatically
+4. Percentage-based positioning ensures accurate alignment
+5. Temporary sync-lock prevents infinite scroll loops
+
+## Theme Support
+
+**Automatic Theme Detection:**
+- **VS Code Integration** - Automatically matches your current VS Code theme
+- **Dark Theme** - High contrast colors optimized for dark backgrounds
+- **Light Theme** - Clean, readable colors for light backgrounds  
+- **High Contrast** - Enhanced visibility for accessibility themes
+- **Real-time Switching** - Instantly adapts when you change VS Code themes
+
+**Theme Features:**
+- **Smart Color Variables** - Uses VS Code's native color tokens
+- **Proper Contrast** - Ensures readability in all theme variants
+- **Consistent Branding** - Maintains WordPress.org visual identity
+- **Border & Shadow Adaptation** - Adjusts visual elements for each theme
+- **Code Block Styling** - Theme-aware syntax highlighting backgrounds
 
 ## File Association
 

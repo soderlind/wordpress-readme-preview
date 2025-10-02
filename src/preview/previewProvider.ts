@@ -98,6 +98,9 @@ export class ReadmePreviewProvider {
       this.disposables
     );
 
+    // Handle scroll synchronization
+    this.setupScrollSync(panel, resource);
+
     this.panels.set(key, panel);
     return panel;
   }
@@ -136,6 +139,14 @@ export class ReadmePreviewProvider {
         break;
       case 'scrollToLine':
         this.scrollToLine(resource, message.line);
+        break;
+      case 'syncEditorScroll':
+        this.syncEditorScroll(resource, message.scrollPercentage);
+        break;
+      case 'openLink':
+        if (message.url) {
+          vscode.env.openExternal(vscode.Uri.parse(message.url));
+        }
         break;
     }
   }
@@ -288,6 +299,56 @@ export class ReadmePreviewProvider {
       </body>
       </html>
     `;
+  }
+
+  private setupScrollSync(panel: vscode.WebviewPanel, resource: vscode.Uri): void {
+    const config = vscode.workspace.getConfiguration('wordpress-readme');
+    if (!config.get('preview.syncScrolling', true)) {
+      return;
+    }
+
+    // Listen to editor scroll events
+    const disposable = vscode.window.onDidChangeTextEditorVisibleRanges(event => {
+      if (event.textEditor.document.uri.toString() === resource.toString()) {
+        const scrollPercentage = this.calculateScrollPercentage(event.textEditor);
+        panel.webview.postMessage({
+          command: 'syncScroll',
+          scrollPercentage: scrollPercentage
+        });
+      }
+    });
+
+    panel.onDidDispose(() => disposable.dispose(), null, this.disposables);
+  }
+
+  private calculateScrollPercentage(editor: vscode.TextEditor): number {
+    const document = editor.document;
+    const visibleRanges = editor.visibleRanges;
+    
+    if (visibleRanges.length === 0) {
+      return 0;
+    }
+
+    const firstVisibleLine = visibleRanges[0].start.line;
+    const totalLines = document.lineCount;
+    
+    return Math.min(firstVisibleLine / Math.max(totalLines - 1, 1), 1);
+  }
+
+
+
+  private syncEditorScroll(resource: vscode.Uri, scrollPercentage: number): void {
+    const editor = vscode.window.visibleTextEditors.find(
+      editor => editor.document.uri.toString() === resource.toString()
+    );
+    
+    if (editor) {
+      const document = editor.document;
+      const targetLine = Math.floor(scrollPercentage * Math.max(document.lineCount - 1, 0));
+      const range = new vscode.Range(targetLine, 0, targetLine, 0);
+      
+      editor.revealRange(range, vscode.TextEditorRevealType.AtTop);
+    }
   }
 
   public dispose(): void {

@@ -1,0 +1,59 @@
+=== Test Plugin ===
+Contributors: testuser
+Tags: example, test
+Requires at least: 5.0
+Tested up to: 6.4
+Stable tag: 1.0.0
+License: GPLv2 or later
+
+This is a test plugin to demonstrate theme contrast improvements.
+
+== Description ==
+
+This section demonstrates various elements that should have good contrast in both light and dark themes:
+
+**Bold text** and *italic text* should be clearly readable.
+
+Here's some `inline code` that should be easily visible with proper background contrast.
+
+Links like https://example.com should have good contrast ratios.
+
+Here's a code block:
+
+```php
+<?php
+function my_plugin_function() {
+    $variable = 'This code should be easy to read';
+    return $variable;
+}
+?>
+```
+
+> This is a blockquote that should also have proper contrast.
+
+== Installation ==
+
+1. Upload the plugin files to your WordPress site
+2. Activate the plugin through the 'Plugins' screen
+3. Configure using `wp-config.php` constants:
+
+```php
+define('MY_PLUGIN_SETTING', true);
+```
+
+== Frequently Asked Questions ==
+
+= Is the contrast good in dark themes? =
+
+Yes! The blue colors and code blocks have been optimized for better readability.
+
+= What about inline code? =
+
+`Inline code` should now have better contrast and visibility.
+
+== Changelog ==
+
+= 1.0.0 =
+* Initial release with improved theme support
+* Better contrast for `code elements`
+* Enhanced readability in dark themes
