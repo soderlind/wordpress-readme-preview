@@ -17,10 +17,21 @@
 		"readme",
 		"preview",
 		"plugin",
-		"markdown"
+		"markdown",
+		"validation",
+		"wordpress.org",
+		"wp-plugin",
+		"readme.txt"
 	],
 	"license": "GPL-2.0-or-later",
-	"icon": "media/icon.png",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/soderlind/wordpress-readme-preview.git"
+	},
+	"bugs": {
+		"url": "https://github.com/soderlind/wordpress-readme-preview/issues"
+	},
+	"homepage": "https://github.com/soderlind/wordpress-readme-preview#readme",
 	"galleryBanner": {
 		"color": "#21759B",
 		"theme": "dark"
