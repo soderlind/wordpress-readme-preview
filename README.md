@@ -85,7 +85,9 @@ A Visual Studio Code extension that provides live preview and validation for Wor
 - **Bold** and *italic* text formatting
 - `Inline code` with proper HTML escaping (`<?php code(); ?>`)
 - Fenced code blocks with syntax highlighting
-- [Links](https://example.com) with title attributes  
+- **Links** - Both inline `[text](url)` and reference-style `[text][ref]`
+- **Link titles** - `[WordPress](https://wordpress.org "Title")` with hover text
+- **Reference definitions** - `[ref]: https://example.com` (properly hidden)
 - Ordered and unordered lists with nesting
 - > Blockquotes for emphasis
 - Video embeds (YouTube, Vimeo, VideoPress)

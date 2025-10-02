@@ -11,7 +11,9 @@ export class WordPressMarkdownParser {
     VIDEOPRESS: /\[wpvideo\s+([^\]]+)\]/
   };
 
-  private static readonly LINK_PATTERN = /\[([^\]]+)\]\(([^)]+)(?:\s+"([^"]*)")?\)/g;
+  private static readonly LINK_PATTERN = /\[([^\]]+)\]\(([^\s)]+)(?:\s+"([^"]*)")?\)/g;
+  private static readonly REFERENCE_LINK_PATTERN = /\[([^\]]+)\]\[([^\]]+)\]/g;
+  private static readonly REFERENCE_DEFINITION_PATTERN = /^\[([^\]]+)\]:\s*(.+)$/gm;
   private static readonly EMPHASIS_PATTERNS = {
     BOLD: /\*\*([^*]+)\*\*/g,
     ITALIC: /\*([^*]+)\*/g,
@@ -65,12 +67,40 @@ export class WordPressMarkdownParser {
   }
 
   private static processLinks(html: string): string {
-    return html.replace(this.LINK_PATTERN, (match, text, url, title) => {
+    // First, extract reference definitions
+    const references: { [key: string]: { url: string; title?: string } } = {};
+    html = html.replace(this.REFERENCE_DEFINITION_PATTERN, (match, reference, urlAndTitle) => {
+      const urlMatch = urlAndTitle.trim().match(/^(\S+)(?:\s+"([^"]*)")?$/);
+      if (urlMatch) {
+        references[reference.toLowerCase()] = {
+          url: urlMatch[1],
+          title: urlMatch[2]
+        };
+      }
+      return ''; // Remove reference definitions from output
+    });
+
+    // Process reference-style links
+    html = html.replace(this.REFERENCE_LINK_PATTERN, (match, text, reference) => {
+      const ref = references[reference.toLowerCase()];
+      if (ref) {
+        const titleAttr = ref.title ? ` title="${this.escapeHtml(ref.title)}"` : '';
+        const safeUrl = this.escapeHtml(ref.url);
+        const safeText = this.escapeHtml(text);
+        return `<a href="${safeUrl}"${titleAttr}>${safeText}</a>`;
+      }
+      return match; // Return unchanged if reference not found
+    });
+
+    // Process inline links
+    html = html.replace(this.LINK_PATTERN, (match, text, url, title) => {
       const titleAttr = title ? ` title="${this.escapeHtml(title)}"` : '';
       const safeUrl = this.escapeHtml(url);
       const safeText = this.escapeHtml(text);
       return `<a href="${safeUrl}"${titleAttr}>${safeText}</a>`;
     });
+
+    return html;
   }
 
   private static processHeaders(html: string): string {
