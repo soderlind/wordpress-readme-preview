@@ -32,6 +32,7 @@
 		"url": "https://github.com/soderlind/wordpress-readme-preview/issues"
 	},
 	"homepage": "https://github.com/soderlind/wordpress-readme-preview#readme",
+	"icon": "media/icon.png",
 	"galleryBanner": {
 		"color": "#21759B",
 		"theme": "dark"
