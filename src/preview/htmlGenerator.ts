@@ -132,8 +132,8 @@ export class HtmlGenerator {
       if (sectionMap[t.title.toLowerCase()]) {
         let sectionHtml = sectionMap[t.title.toLowerCase()] || '';
         if (t.id === 'description' && assets?.screenshots && assets.screenshots.length) {
-          // Append screenshots gallery with anchor for hash #screenshots
-          sectionHtml += `<div id="screenshots" class="screenshots-anchor"></div>${this.renderScreenshots(assets)}`;
+          // Append screenshots gallery with heading and anchor for hash #screenshots
+          sectionHtml += `<div id="screenshots" class="screenshots-anchor"></div><h2 class="section-title screenshots-title">Screenshots</h2>${this.renderScreenshots(assets)}`;
         }
         content = sectionHtml;
       } else {

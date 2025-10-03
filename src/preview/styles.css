@@ -332,6 +332,11 @@ body {
 	padding-bottom: 8px;
 }
 
+/* Screenshots title inside tabbed description (after content) */
+.screenshots-title {
+	margin-top: 32px;
+}
+
 .section-content {
 	font-size: 14px;
 	line-height: 1.6;
@@ -758,7 +763,8 @@ body {
 /* ============================================ */
 /* Forced Background Modes (light/dark override) */
 /* ============================================ */
-body.forced-light, .readme-preview.forced-light {
+body.forced-light,
+.readme-preview.forced-light {
 	/* Reset to light palette regardless of editor */
 	--bg-color: #ffffff;
 	--text-color: #1e1e1e;
@@ -770,7 +776,8 @@ body.forced-light, .readme-preview.forced-light {
 	background: var(--bg-color);
 }
 
-body.forced-dark, .readme-preview.forced-dark {
+body.forced-dark,
+.readme-preview.forced-dark {
 	/* Derived from dark overrides above, enforced even in light editor */
 	--bg-color: #1e1e1e;
 	--text-color: #e6edf3;
@@ -782,19 +789,24 @@ body.forced-dark, .readme-preview.forced-dark {
 	--wp-blue: #4fc3f7;
 	--wp-blue-dark: #81d4fa;
 	--wp-blue-light: #29b6f6;
-	--warning-bg: rgba(255,146,43,0.15);
-	--warning-border: rgba(255,146,43,0.3);
-	--error-bg: rgba(214,54,56,0.15);
-	--error-border: rgba(214,54,56,0.3);
-	--success-bg: rgba(0,163,42,0.15);
-	--success-border: rgba(0,163,42,0.3);
-	--shadow-light: rgba(0,0,0,0.3);
-	--shadow-medium: rgba(0,0,0,0.5);
+	--warning-bg: rgba(255, 146, 43, 0.15);
+	--warning-border: rgba(255, 146, 43, 0.3);
+	--error-bg: rgba(214, 54, 56, 0.15);
+	--error-border: rgba(214, 54, 56, 0.3);
+	--success-bg: rgba(0, 163, 42, 0.15);
+	--success-border: rgba(0, 163, 42, 0.3);
+	--shadow-light: rgba(0, 0, 0, 0.3);
+	--shadow-medium: rgba(0, 0, 0, 0.5);
 	background: var(--bg-color);
 }
 
 /* Ensure code blocks adapt in forced modes */
 body.forced-dark .section-content code,
-body.forced-dark .section-content pre { color: #e6edf3; }
+body.forced-dark .section-content pre {
+	color: #e6edf3;
+}
+
 body.forced-light .section-content code,
-body.forced-light .section-content pre { color: var(--text-color); }
+body.forced-light .section-content pre {
+	color: var(--text-color);
+}
