@@ -125,9 +125,12 @@ export class ReadmePreviewProvider {
       // If performance becomes an issue, introduce a timestamp/TTL based cache.
       const assets = await this.collectPluginAssets(document.uri);
       this.assetsCache.set(document.uri.toString(), assets);
-      const config = vscode.workspace.getConfiguration('wordpress-readme');
-  const theme = config.get<string>('preview.theme', 'classic');
-  const syncScrolling = config.get<boolean>('preview.syncScrolling', false);
+    const config = vscode.workspace.getConfiguration('wordpress-readme');
+    const theme = config.get<string>('preview.theme', 'classic');
+    const syncScrolling = config.get<boolean>('preview.syncScrolling', false);
+  const rawBackground = config.get<string>('preview.backgroundMode', 'auto');
+  const allowedModes = new Set(['auto','light','dark']);
+  const backgroundMode = (allowedModes.has(rawBackground!) ? rawBackground : 'auto') as 'auto' | 'light' | 'dark';
       
       const html = await this.htmlGenerator.generateHtml(parsed, validation, {
         resource: document.uri,
@@ -135,7 +138,8 @@ export class ReadmePreviewProvider {
         extensionUri: this.context.extensionUri,
         theme,
         assets,
-        syncScrolling
+        syncScrolling,
+        backgroundMode
       });
 
       panel.webview.html = html;

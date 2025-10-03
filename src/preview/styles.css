@@ -533,7 +533,8 @@ body {
 
 .theme-wordpress-org img.wporg-icon {
 	position: absolute;
-	top: 12px; /* moved from bottom to top */
+	top: 12px;
+	/* moved from bottom to top */
 	left: 16px;
 	width: 80px;
 	height: 80px;
@@ -543,7 +544,8 @@ body {
 	padding: 8px;
 	box-shadow: 0 2px 6px var(--shadow-light);
 	border: 1px solid var(--border-color);
-	z-index: 2; /* ensure it sits above banner image */
+	z-index: 2;
+	/* ensure it sits above banner image */
 }
 
 .theme-wordpress-org .wporg-header-inner {
@@ -752,3 +754,47 @@ body {
 		height: 58px;
 	}
 }
+
+/* ============================================ */
+/* Forced Background Modes (light/dark override) */
+/* ============================================ */
+body.forced-light, .readme-preview.forced-light {
+	/* Reset to light palette regardless of editor */
+	--bg-color: #ffffff;
+	--text-color: #1e1e1e;
+	--secondary-text: #646970;
+	--border-color: #e1e1e1;
+	--header-bg: #f8f9fa;
+	--code-bg: #f6f8fa;
+	--code-border: #e1e4e8;
+	background: var(--bg-color);
+}
+
+body.forced-dark, .readme-preview.forced-dark {
+	/* Derived from dark overrides above, enforced even in light editor */
+	--bg-color: #1e1e1e;
+	--text-color: #e6edf3;
+	--secondary-text: #9d9d9d;
+	--border-color: #30363d;
+	--header-bg: #252526;
+	--code-bg: #161b22;
+	--code-border: #30363d;
+	--wp-blue: #4fc3f7;
+	--wp-blue-dark: #81d4fa;
+	--wp-blue-light: #29b6f6;
+	--warning-bg: rgba(255,146,43,0.15);
+	--warning-border: rgba(255,146,43,0.3);
+	--error-bg: rgba(214,54,56,0.15);
+	--error-border: rgba(214,54,56,0.3);
+	--success-bg: rgba(0,163,42,0.15);
+	--success-border: rgba(0,163,42,0.3);
+	--shadow-light: rgba(0,0,0,0.3);
+	--shadow-medium: rgba(0,0,0,0.5);
+	background: var(--bg-color);
+}
+
+/* Ensure code blocks adapt in forced modes */
+body.forced-dark .section-content code,
+body.forced-dark .section-content pre { color: #e6edf3; }
+body.forced-light .section-content code,
+body.forced-light .section-content pre { color: var(--text-color); }

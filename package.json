@@ -165,6 +165,12 @@
 					"default": false,
 					"description": "Automatically open preview when opening a readme.txt file"
 				},
+				"wordpress-readme.preview.backgroundMode": {
+					"type": "string",
+					"enum": ["auto", "light", "dark"],
+					"default": "auto",
+					"description": "Controls preview background: 'auto' follows editor theme, or force 'light' / 'dark' for the preview panel only"
+				},
 				"wordpress-readme.preview.syncScrolling": {
 					"type": "boolean",
 					"default": false,

@@ -10,6 +10,7 @@ export interface HtmlGeneratorOptions {
   theme?: string;
   assets?: PluginAssets;
   syncScrolling?: boolean;
+  backgroundMode?: 'auto' | 'light' | 'dark';
 }
 
 export interface PluginAssets {
@@ -48,6 +49,7 @@ export class HtmlGenerator {
 
     const nonce = this.getNonce();
 
+    const forcedMode = options.backgroundMode && options.backgroundMode !== 'auto' ? ` forced-${options.backgroundMode}` : '';
     const rawHtml = `
       <!DOCTYPE html>
       <html lang="en">
@@ -71,8 +73,8 @@ export class HtmlGenerator {
           })();
         </script>
       </head>
-      <body>
-  <div class="readme-preview theme-${theme}" data-sync-scrolling="${options.syncScrolling ? 'on' : 'off'}">
+    <body class="background-mode-${options.backgroundMode || 'auto'}${forcedMode}">
+  <div class="readme-preview theme-${theme}${forcedMode}" data-sync-scrolling="${options.syncScrolling ? 'on' : 'off'}">
           ${theme === 'wordpress-org' 
             ? this.generateTabbedLayout(readme, validation, processedAssets) 
             : `${this.generateValidationSummary(validation)}${this.generateHeader(readme.header, validation)}${this.generateSections(readme.sections)}`}
