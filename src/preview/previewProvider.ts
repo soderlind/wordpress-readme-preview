@@ -120,12 +120,11 @@ export class ReadmePreviewProvider {
       const content = document.getText();
       const parsed = ReadmeParser.parse(content);
       const validation = ReadmeValidator.validate(parsed);
-      // Pre-fetch assets (cached) for future theme rendering
-      let assets = this.assetsCache.get(document.uri.toString());
-      if (!assets) {
-        assets = await this.collectPluginAssets(document.uri);
-        this.assetsCache.set(document.uri.toString(), assets);
-      }
+      // Re-collect assets every update to ensure new screenshots are picked up
+      // (previous caching caused only initially found screenshots to display).
+      // If performance becomes an issue, introduce a timestamp/TTL based cache.
+      const assets = await this.collectPluginAssets(document.uri);
+      this.assetsCache.set(document.uri.toString(), assets);
       const config = vscode.workspace.getConfiguration('wordpress-readme');
   const theme = config.get<string>('preview.theme', 'classic');
   const syncScrolling = config.get<boolean>('preview.syncScrolling', false);
