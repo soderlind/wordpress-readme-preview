@@ -598,73 +598,14 @@ body {
 	display: block;
 }
 
-/* Screenshot gallery */
-.theme-wordpress-org .wporg-screenshots {
-	display: grid;
-	grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-	gap: 16px;
-}
-
-.theme-wordpress-org .wporg-screenshot {
-	margin: 0;
-	border: 1px solid var(--border-color);
-	border-radius: 6px;
-	background: var(--header-bg);
-	padding: 8px;
-	display: flex;
-	flex-direction: column;
-	gap: 8px;
-}
-
-.theme-wordpress-org .wporg-screenshot img {
-	max-width: 100%;
-	height: auto;
-	border-radius: 4px;
-	display: block;
-}
-
-.theme-wordpress-org .wporg-screenshot figcaption {
-	font-size: 12px;
-	color: var(--secondary-text);
-	text-align: center;
-}
-
-.theme-wordpress-org .tab-placeholder {
-	font-style: italic;
-	color: var(--secondary-text);
-	padding: 8px 4px 16px;
-}
-
-@media (max-width: 700px) {
-	.theme-wordpress-org img.wporg-icon {
-		width: 64px;
-		height: 64px;
-	}
-
-	.theme-wordpress-org .wporg-tabpanels {
-		padding: 16px 16px 8px;
-	}
-
-	.theme-wordpress-org .wporg-tabs {
-		flex-wrap: nowrap;
-	}
-
-	.theme-wordpress-org .wporg-tab {
-		flex: 0 0 auto;
-	}
-}
-
-/* ===================================== */
-/* Embedded Screenshot Gallery           */
-/* ===================================== */
-.theme-wordpress-org .wporg-gallery-embedded {
+/* Unified Embedded Screenshot Gallery (classic + wordpress-org) */
+.wporg-gallery-embedded {
 	margin-top: 24px;
 	display: flex;
 	flex-direction: column;
 	gap: 16px;
 }
-
-.theme-wordpress-org .wporg-gallery-embedded .gallery-main {
+.wporg-gallery-embedded .gallery-main {
 	position: relative;
 	background: var(--header-bg);
 	border: 1px solid var(--border-color);
@@ -675,138 +616,23 @@ body {
 	align-items: center;
 	gap: 12px;
 }
-
-.theme-wordpress-org .wporg-gallery-embedded .gallery-current {
-	margin: 0;
-	display: flex;
-	flex-direction: column;
-	gap: 8px;
-	align-items: center;
-}
-
-.theme-wordpress-org .wporg-gallery-embedded .gallery-image {
-	max-width: 100%;
-	height: auto;
-	border-radius: 6px;
-	box-shadow: 0 2px 8px var(--shadow-light);
-	border: 1px solid var(--border-color);
-	background: var(--bg-color);
-}
-
-.theme-wordpress-org .wporg-gallery-embedded .gallery-caption {
-	font-size: 13px;
-	color: var(--secondary-text);
-	text-align: center;
-	max-width: 90%;
-}
-
-.theme-wordpress-org .wporg-gallery-embedded .gallery-counter {
-	position: absolute;
-	bottom: 8px;
-	right: 12px;
-	font-size: 12px;
-	color: var(--secondary-text);
-}
-
-/* High contrast arrows */
-.theme-wordpress-org .wporg-gallery-embedded .gallery-inline-nav {
-	position: absolute;
-	top: 50%;
-	transform: translateY(-50%);
-	background: linear-gradient(var(--bg-color), var(--header-bg));
-	border: 1px solid var(--wp-blue-light);
-	width: 42px;
-	height: 42px;
-	border-radius: 50%;
-	font-size: 26px;
-	line-height: 1;
-	cursor: pointer;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	box-shadow: 0 2px 6px var(--shadow-light), 0 0 0 1px rgba(255,255,255,0.4) inset;
-	color: var(--wp-blue-dark);
-	font-weight: 600;
-	transition: background .15s ease, color .15s ease, border-color .15s ease, box-shadow .15s ease;
-}
-
-.theme-wordpress-org .wporg-gallery-embedded .gallery-inline-nav:hover:not(:disabled) {
-	background: var(--wp-blue-light);
-	color: #fff;
-	border-color: var(--wp-blue-light);
-}
-
-.theme-wordpress-org .wporg-gallery-embedded .gallery-inline-nav:focus-visible {
-	outline: 3px solid var(--wp-blue);
-	outline-offset: 2px;
-}
-
-.theme-wordpress-org .wporg-gallery-embedded .gallery-inline-nav:disabled {
-	opacity: .35;
-	background: var(--header-bg);
-	color: var(--secondary-text);
-	border-color: var(--border-color);
-	cursor: default;
-}
-
-.theme-wordpress-org .wporg-gallery-embedded .gallery-inline-nav.prev {
-	left: 8px;
-}
-
-.theme-wordpress-org .wporg-gallery-embedded .gallery-inline-nav.next {
-	right: 8px;
-}
-
-.theme-wordpress-org .wporg-gallery-embedded .gallery-thumbnails {
-	display: flex;
-	flex-wrap: wrap;
-	gap: 8px;
-	justify-content: flex-start;
-}
-
-.theme-wordpress-org .wporg-gallery-embedded .gallery-thumbnails .thumb {
-	background: var(--header-bg);
-	border: 1px solid var(--border-color);
-	padding: 2px;
-	border-radius: 6px;
-	cursor: pointer;
-	line-height: 0;
-	display: block;
-	width: 84px;
-	height: 70px;
-	overflow: hidden;
-	position: relative;
-}
-
-.theme-wordpress-org .wporg-gallery-embedded .gallery-thumbnails .thumb img {
-	width: 100%;
-	height: 100%;
-	object-fit: cover;
-	border-radius: 4px;
-}
-
-.theme-wordpress-org .wporg-gallery-embedded .gallery-thumbnails .thumb.active {
-	outline: 2px solid var(--wp-blue);
-	outline-offset: 2px;
-}
-
-.theme-wordpress-org .wporg-gallery-embedded .gallery-thumbnails .thumb:focus-visible {
-	outline: 2px solid var(--wp-blue-light);
-}
-
-@media (max-width:700px) {
-	.theme-wordpress-org .wporg-gallery-embedded .gallery-inline-nav {
-		width: 36px;
-		height: 36px;
-		font-size: 22px;
-	}
-
-	.theme-wordpress-org .wporg-gallery-embedded .gallery-main {
-		padding: 12px 12px 48px;
-	}
-
-	.theme-wordpress-org .wporg-gallery-embedded .gallery-thumbnails .thumb {
-		width: 70px;
-		height: 58px;
-	}
+.wporg-gallery-embedded .gallery-current { margin:0; display:flex; flex-direction:column; gap:8px; align-items:center; }
+.wporg-gallery-embedded .gallery-image { max-width:100%; height:auto; border-radius:6px; box-shadow:0 2px 8px var(--shadow-light); border:1px solid var(--border-color); background: var(--bg-color); }
+.wporg-gallery-embedded .gallery-caption { font-size:13px; color: var(--secondary-text); text-align:center; max-width:90%; }
+.wporg-gallery-embedded .gallery-counter { position:absolute; bottom:8px; right:12px; font-size:12px; color: var(--secondary-text); }
+.wporg-gallery-embedded .gallery-inline-nav { position:absolute; top:50%; transform:translateY(-50%); background:linear-gradient(var(--bg-color), var(--header-bg)); border:1px solid var(--wp-blue-light); width:42px; height:42px; border-radius:50%; font-size:26px; line-height:1; cursor:pointer; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 6px var(--shadow-light),0 0 0 1px rgba(255,255,255,0.4) inset; color:var(--wp-blue-dark); font-weight:600; transition:background .15s ease, color .15s ease, border-color .15s ease, box-shadow .15s ease; }
+.wporg-gallery-embedded .gallery-inline-nav:hover:not(:disabled){ background: var(--wp-blue-light); color:#fff; border-color: var(--wp-blue-light); }
+.wporg-gallery-embedded .gallery-inline-nav:focus-visible { outline:3px solid var(--wp-blue); outline-offset:2px; }
+.wporg-gallery-embedded .gallery-inline-nav:disabled { opacity:.35; background: var(--header-bg); color: var(--secondary-text); border-color: var(--border-color); cursor: default; }
+.wporg-gallery-embedded .gallery-inline-nav.prev { left:8px; }
+.wporg-gallery-embedded .gallery-inline-nav.next { right:8px; }
+.wporg-gallery-embedded .gallery-thumbnails { display:flex; flex-wrap:wrap; gap:8px; justify-content:flex-start; }
+.wporg-gallery-embedded .gallery-thumbnails .thumb { background:var(--header-bg); border:1px solid var(--border-color); padding:2px; border-radius:6px; cursor:pointer; line-height:0; display:block; width:84px; height:70px; overflow:hidden; position:relative; }
+.wporg-gallery-embedded .gallery-thumbnails .thumb img { width:100%; height:100%; object-fit:cover; border-radius:4px; }
+.wporg-gallery-embedded .gallery-thumbnails .thumb.active { outline:2px solid var(--wp-blue); outline-offset:2px; }
+.wporg-gallery-embedded .gallery-thumbnails .thumb:focus-visible { outline:2px solid var(--wp-blue-light); }
+@media (max-width:700px){
+	.wporg-gallery-embedded .gallery-inline-nav { width:36px; height:36px; font-size:22px; }
+	.wporg-gallery-embedded .gallery-main { padding:12px 12px 48px; }
+	.wporg-gallery-embedded .gallery-thumbnails .thumb { width:70px; height:58px; }
 }
