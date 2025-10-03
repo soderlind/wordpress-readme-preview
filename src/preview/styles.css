@@ -41,6 +41,11 @@
 	--shadow-medium: rgba(0, 0, 0, 0.15);
 	--overlay-light: rgba(0, 0, 0, 0.05);
 	--overlay-medium: rgba(0, 0, 0, 0.1);
+
+	/* Tag colors (light default) */
+	--tag-bg: var(--wp-blue);
+	--tag-text: #ffffff;
+	--tag-border: var(--wp-blue-dark);
 }
 
 /* Dark theme overrides */
@@ -72,6 +77,11 @@
 	--shadow-medium: rgba(0, 0, 0, 0.5);
 	--overlay-light: rgba(255, 255, 255, 0.05);
 	--overlay-medium: rgba(255, 255, 255, 0.1);
+
+	/* Dark theme tag adjustments for higher contrast */
+	--tag-bg: #0d5d85; /* slightly deeper than wp-blue for contrast against dark bg */
+	--tag-text: #f3f9fb;
+	--tag-border: #29b6f6;
 }
 
 /* Dark theme code block enhancements */
@@ -296,12 +306,16 @@ body {
 }
 
 .tag {
-	background: var(--wp-blue);
-	color: white;
+	background: var(--tag-bg);
+	color: var(--tag-text);
 	padding: 2px 8px;
 	border-radius: 12px;
 	font-size: 12px;
-	font-weight: 500;
+	font-weight: 600;
+	line-height: 1.2;
+	border: 1px solid var(--tag-border);
+	box-shadow: 0 1px 2px var(--shadow-light);
+	letter-spacing: .25px;
 }
 
 .missing {
@@ -773,6 +787,9 @@ body.forced-light,
 	--header-bg: #f8f9fa;
 	--code-bg: #f6f8fa;
 	--code-border: #e1e4e8;
+	--tag-bg: var(--wp-blue);
+	--tag-text: #ffffff;
+	--tag-border: var(--wp-blue-dark);
 	background: var(--bg-color);
 }
 
@@ -797,6 +814,9 @@ body.forced-dark,
 	--success-border: rgba(0, 163, 42, 0.3);
 	--shadow-light: rgba(0, 0, 0, 0.3);
 	--shadow-medium: rgba(0, 0, 0, 0.5);
+	--tag-bg: #0d5d85;
+	--tag-text: #f3f9fb;
+	--tag-border: #29b6f6;
 	background: var(--bg-color);
 }
 
