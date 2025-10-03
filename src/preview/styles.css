@@ -300,50 +300,25 @@ body {
 	text-decoration: underline;
 }
 
-.tags {
-	display: flex;
-	flex-wrap: wrap;
-	gap: 6px;
-}
-
-.tag {
-	background: var(--tag-bg);
-	color: var(--tag-text);
-	padding: 2px 8px;
-	border-radius: 12px;
+ .tag {
+	background: transparent !important;
+	color: var(--text-color) !important;
+	padding: 0 !important;
+	border: none !important;
+	border-radius: 0 !important;
 	font-size: 12px;
 	font-weight: 600;
-	line-height: 1.2;
-	border: 1px solid var(--tag-border);
-	box-shadow: 0 1px 2px var(--shadow-light);
-	letter-spacing: .25px;
-	text-shadow: 0 1px 0 rgba(255,255,255,0.15);
+	line-height: 1.3;
+	letter-spacing: .2px;
+	box-shadow: none !important;
+	text-shadow: none !important;
 }
 
-/* Light theme specific stronger contrast */
-[data-vscode-theme-kind="vscode-light"] .tag:not(.no-contrast-adjust),
-[data-vscode-theme-kind="vscode-high-contrast-light"] .tag:not(.no-contrast-adjust),
-body.forced-light .tag:not(.no-contrast-adjust),
-.readme-preview.forced-light .tag:not(.no-contrast-adjust) {
-	--tag-bg: #024a73; /* slightly darker for higher luminance contrast */
-	--tag-text: #ffffff;
-	--tag-border: #013554;
-	/* Provide stronger perceived foreground via additional glow on white text */
-	text-shadow: 0 1px 0 rgba(0,0,0,0.18), 0 0 2px rgba(255,255,255,0.35);
+.tag:hover, .tag:focus-visible {
+	text-decoration: underline;
 }
 
-[data-vscode-theme-kind="vscode-light"] .tag:not(.no-contrast-adjust):hover,
-[data-vscode-theme-kind="vscode-high-contrast-light"] .tag:not(.no-contrast-adjust):hover,
-body.forced-light .tag:not(.no-contrast-adjust):hover,
-.readme-preview.forced-light .tag:not(.no-contrast-adjust):hover {
-	--tag-bg: #035885;
-	--tag-border: #024663;
-}
-
-.tag:focus-visible {
-	outline: 2px solid var(--wp-blue-light);
-	outline-offset: 2px;
-}
+.tag:focus-visible { outline: 2px solid var(--wp-blue-light); outline-offset:2px; }
 
 .missing {
 	color: var(--wp-red);
