@@ -188,6 +188,45 @@ All context menus provide instant access to preview and validation commands.
 - **Border & Shadow Adaptation** - Adjusts visual elements for each theme
 - **Code Block Styling** - Theme-aware syntax highlighting backgrounds
 
+### Alternate Layout: wordpress-org Theme
+
+You can switch to an alternative WordPress.org–style tabbed layout that more closely mirrors the official plugin directory presentation.
+
+Setting:
+```jsonc
+"wordpress-readme.preview.theme": "wordpress-org" // default is "classic"
+```
+
+Features of the `wordpress-org` theme:
+- Tabbed interface (Description, Installation, FAQ, Screenshots, Changelog, Reviews placeholder)
+- Banner + Icon rendering when available
+- Responsive screenshot gallery
+- Accessible keyboard navigation (Arrow keys / Home / End across tabs)
+- Deep linking using URL hash (e.g. `#faq` selects the FAQ tab)
+
+If a tab has no corresponding content it displays a subtle placeholder. Reviews are not locally generated (placeholder only).
+
+### Plugin Asset Auto-Discovery
+
+When using the `wordpress-org` theme the extension automatically searches for standard plugin assets next to your `readme.txt`:
+
+Search order (first existing directory wins precedence if duplicates):
+1. `.wordpress-org/`
+2. `assets/`
+
+Supported file patterns (case-insensitive):
+- Banners: `banner-1544x500.(png|jpg)` (large), `banner-772x250.(png|jpg)` (small)
+- Icons: `icon-256x256.*`, `icon-128x128.*`, `icon-64x64.*`, `icon-32x32.*` (`.png`, `.jpg`, `.jpeg`, `.svg`)
+- Screenshots: `screenshot-1.(png|jpg|jpeg|gif)`, `screenshot-2.*`, etc.
+
+The best available icon size is chosen in order: 256 → 128 → 64 → 32. Screenshots are displayed in ascending numerical order.
+
+If no assets are found the layout gracefully omits the banner/icon/screenshot areas.
+
+This mirrors the conventions used by WordPress.org so you can visually QA your assets before publishing.
+
+> Tip: Keep your banner image optimized. WordPress.org expects specific dimensions and reasonable file sizes for performance.
+
 ## File Association
 
 The extension automatically activates for:

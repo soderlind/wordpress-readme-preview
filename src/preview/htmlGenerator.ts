@@ -7,6 +7,15 @@ export interface HtmlGeneratorOptions {
   resource: vscode.Uri;
   webview: vscode.Webview;
   extensionUri: vscode.Uri;
+  theme?: string;
+  assets?: PluginAssets;
+}
+
+export interface PluginAssets {
+  banner?: { large?: vscode.Uri; small?: vscode.Uri };
+  icons?: { [size: string]: vscode.Uri };
+  screenshots?: { index: number; uri: vscode.Uri; filename: string }[];
+  assetDirs: vscode.Uri[];
 }
 
 export class HtmlGenerator {
@@ -18,6 +27,7 @@ export class HtmlGenerator {
     options: HtmlGeneratorOptions
   ): Promise<string> {
     const { webview, extensionUri } = options;
+    const theme = options.theme || 'classic';
     
     // Get URIs for resources
     const styleUri = webview.asWebviewUri(
@@ -53,15 +63,101 @@ export class HtmlGenerator {
         </script>
       </head>
       <body>
-        <div class="readme-preview">
-          ${this.generateValidationSummary(validation)}
-          ${this.generateHeader(readme.header, validation)}
-          ${this.generateSections(readme.sections)}
+        <div class="readme-preview theme-${theme}">
+          ${theme === 'wordpress-org' 
+            ? this.generateTabbedLayout(readme, validation, options.assets) 
+            : `${this.generateValidationSummary(validation)}${this.generateHeader(readme.header, validation)}${this.generateSections(readme.sections)}`}
         </div>
         <script nonce="${nonce}" src="${scriptUri}"></script>
       </body>
       </html>
     `;
+  }
+
+  private generateTabbedLayout(readme: ParsedReadme, validation: ValidationResult, assets?: PluginAssets): string {
+    // Placeholder implementation: will be replaced with full tabbed markup
+    const tabs = [
+      { id: 'description', title: 'Description' },
+      { id: 'installation', title: 'Installation' },
+      { id: 'faq', title: 'FAQ' },
+      { id: 'screenshots', title: 'Screenshots' },
+      { id: 'changelog', title: 'Changelog' },
+      { id: 'reviews', title: 'Reviews' } // placeholder; real data not parsed yet
+    ];
+
+    // Map readme sections to tab panels by simple title matching
+    const sectionMap: { [key: string]: string } = {};
+    for (const section of readme.sections) {
+      const key = section.title.toLowerCase();
+      sectionMap[key] = this.generateSection(section);
+    }
+
+    // Asset header
+    const headerHTML = this.generateHeader(readme.header, validation);
+    const bannerHTML = this.renderAssetsHeader(assets, readme.header.pluginName || '');
+
+    const tabButtons = tabs.map((t, i) => `<button role="tab" class="wporg-tab ${i===0?'active':''}" aria-selected="${i===0}" aria-controls="panel-${t.id}" id="tab-${t.id}">${t.title}</button>`).join('');
+    const panels = tabs.map((t, i) => {
+      let content = '';
+      if (t.id === 'screenshots') {
+        content = this.renderScreenshots(assets);
+      } else if (sectionMap[t.title.toLowerCase()]) {
+        // Extract only inner section content (strip wrapper) for cleaner tab
+        const sectionHtml = sectionMap[t.title.toLowerCase()] || '';
+        content = sectionHtml;
+      } else if (t.id === 'reviews') {
+        content = '<div class="tab-placeholder">Reviews are not available in local preview.</div>';
+      } else {
+        content = '<div class="tab-placeholder">No content for this section.</div>';
+      }
+      return `<div role="tabpanel" id="panel-${t.id}" class="wporg-tabpanel ${i===0?'active':''}" aria-labelledby="tab-${t.id}">${content}</div>`;
+    }).join('');
+
+    return `
+      <div class="wporg-header">
+        ${bannerHTML}
+        <div class="wporg-header-inner">
+          ${headerHTML}
+        </div>
+      </div>
+      ${this.generateValidationSummary(validation)}
+      <div class="wporg-tabs" role="tablist">
+        ${tabButtons}
+      </div>
+      <div class="wporg-tabpanels">
+        ${panels}
+      </div>
+    `;
+  }
+
+  private renderAssetsHeader(assets: PluginAssets | undefined, pluginName: string): string {
+    if (!assets || (!assets.banner && (!assets.icons || Object.keys(assets.icons).length === 0))) {
+      return '';
+    }
+    const bannerUri = assets.banner?.large || assets.banner?.small;
+    const iconUri = this.pickBestIcon(assets.icons);
+    const bannerImg = bannerUri ? `<img class="wporg-banner" src="${bannerUri}" alt="${this.escapeHtml(pluginName)} banner" />` : '';
+    const iconImg = iconUri ? `<img class="wporg-icon" src="${iconUri}" alt="${this.escapeHtml(pluginName)} icon" />` : '';
+    return `<div class="wporg-asset-header">${bannerImg}${iconImg}</div>`;
+  }
+
+  private pickBestIcon(icons: { [size: string]: vscode.Uri } | undefined): vscode.Uri | undefined {
+    if (!icons) return undefined;
+    const preferred = ['256','128','64','32'];
+    for (const p of preferred) {
+      if (icons[p]) return icons[p];
+    }
+    const sizes = Object.keys(icons);
+    if (sizes.length) return icons[sizes[0]];
+    return undefined;
+  }
+
+  private renderScreenshots(assets: PluginAssets | undefined): string {
+    if (!assets || !assets.screenshots || assets.screenshots.length === 0) {
+      return '<div class="tab-placeholder">No screenshots found.</div>';
+    }
+    const items = assets.screenshots.map(s => `<figure class="wporg-screenshot"><img src="${s.uri}" alt="Screenshot ${s.index}" /><figcaption>Screenshot ${s.index}</figcaption></figure>`).join('');
+    return `<div class="wporg-screenshots">${items}</div>`;
   }
 
   private generateValidationSummary(validation: ValidationResult): string {

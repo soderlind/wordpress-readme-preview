@@ -3,7 +3,7 @@
 	"displayName": "WordPress Readme Preview",
 	"description": "Preview WordPress readme.txt files with accurate rendering and validation",
 	"version": "0.1.0",
-	"publisher": "wordpress-readme-preview",
+	"publisher": "persoderlind",
 	"engines": {
 		"vscode": "^1.74.0"
 	},
@@ -169,6 +169,15 @@
 					"type": "boolean",
 					"default": true,
 					"description": "Synchronize scrolling between editor and preview"
+				},
+				"wordpress-readme.preview.theme": {
+					"type": "string",
+					"enum": [
+						"classic",
+						"wordpress-org"
+					],
+					"default": "classic",
+					"description": "Preview theme style: 'classic' for single-page or 'wordpress-org' for tabbed layout with plugin assets"
 				},
 				"wordpress-readme.validation.enabled": {
 					"type": "boolean",

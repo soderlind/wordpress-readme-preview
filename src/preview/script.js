@@ -159,6 +159,79 @@
   // Initial theme detection
   updateTheme();
 
+  // Tab interface logic for wordpress-org theme
+  function initTabs() {
+    const tablist = document.querySelector('.wporg-tabs');
+    if (!tablist) return; // Not in wordpress-org theme
+    const tabs = Array.from(tablist.querySelectorAll('[role="tab"]'));
+    const panels = Array.from(document.querySelectorAll('.wporg-tabpanel'));
+
+    function activateTab(tab, setFocus = true) {
+      const id = tab.id.replace('tab-', 'panel-');
+      tabs.forEach(t => {
+        const selected = t === tab;
+        t.classList.toggle('active', selected);
+        t.setAttribute('aria-selected', String(selected));
+        t.tabIndex = selected ? 0 : -1;
+      });
+      panels.forEach(p => {
+        const match = p.id === id;
+        p.classList.toggle('active', match);
+        p.hidden = !match;
+      });
+      if (setFocus) tab.focus();
+      // Update hash without default jump
+      if (history.replaceState) {
+        history.replaceState(null, '', '#' + tab.id.substring(4));
+      }
+    }
+
+    tabs.forEach(tab => {
+      tab.addEventListener('click', e => {
+        e.preventDefault();
+        activateTab(tab, false);
+      });
+      tab.addEventListener('keydown', e => {
+        const idx = tabs.indexOf(tab);
+        let nextIdx = null;
+        switch (e.key) {
+          case 'ArrowRight':
+          case 'ArrowDown':
+            nextIdx = (idx + 1) % tabs.length; break;
+          case 'ArrowLeft':
+          case 'ArrowUp':
+            nextIdx = (idx - 1 + tabs.length) % tabs.length; break;
+          case 'Home':
+            nextIdx = 0; break;
+          case 'End':
+            nextIdx = tabs.length - 1; break;
+          default:
+            return;
+        }
+        e.preventDefault();
+        activateTab(tabs[nextIdx]);
+      });
+    });
+
+    // Deep link support (#description etc.)
+    const hash = window.location.hash.replace('#', '');
+    if (hash) {
+      const deepTab = document.getElementById('tab-' + hash);
+      if (deepTab) activateTab(deepTab, false);
+    } else {
+      // Ensure first tab is active & panels hidden state consistent
+      const first = tabs[0];
+      if (first) activateTab(first, false);
+    }
+  }
+
+  // Initialize tabs after DOM ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initTabs);
+  } else {
+    initTabs();
+  }
+
   // Watch for theme changes
   const observer = new MutationObserver(function(mutations) {
     mutations.forEach(function(mutation) {
