@@ -204,27 +204,28 @@ export class HtmlGenerator {
     if (Object.keys(captions).length === 0) {
       return '';
     }
-    const items = assets.screenshots.map((s, idx) => {
-      const caption = captions[s.index] ? this.escapeHtml(captions[s.index]) : `Screenshot ${s.index}`;
-      const src = s.uri.toString();
-      return `<figure class="wporg-screenshot" data-index="${idx}"><button class="screenshot-thumb" aria-label="Open screenshot ${s.index}"><img src="${src}" alt="${caption}" /></button><figcaption>${caption}</figcaption></figure>`;
-    }).join('');
-    // Lightbox container appended (hidden by default) once per gallery
-    const lightbox = `
-      <div class="wporg-gallery-lightbox" role="dialog" aria-modal="true" aria-label="Screenshot gallery" hidden>
-        <div class="wporg-gallery-backdrop" data-action="close"></div>
-        <div class="wporg-gallery-content">
-          <button class="gallery-close" data-action="close" aria-label="Close gallery">×</button>
-          <button class="gallery-nav prev" data-action="prev" aria-label="Previous screenshot">‹</button>
-          <button class="gallery-nav next" data-action="next" aria-label="Next screenshot">›</button>
+    const mainFirst = assets.screenshots[0];
+    const firstCaption = captions[mainFirst.index] ? this.escapeHtml(captions[mainFirst.index]) : `Screenshot ${mainFirst.index}`;
+    const mainViewer = `
+      <div class="wporg-gallery-embedded" data-gallery>
+        <div class="gallery-main" aria-live="polite">
           <figure class="gallery-current">
-            <img class="gallery-image" alt="" />
-            <figcaption class="gallery-caption"></figcaption>
+            <img class="gallery-image" src="${mainFirst.uri.toString()}" alt="${firstCaption}" />
+            <figcaption class="gallery-caption">${firstCaption}</figcaption>
           </figure>
-          <div class="gallery-counter" aria-live="polite"></div>
+          <button class="gallery-inline-nav prev" aria-label="Previous screenshot" disabled>‹</button>
+          <button class="gallery-inline-nav next" aria-label="Next screenshot" ${assets.screenshots.length>1?'':'disabled'}>›</button>
+          <div class="gallery-counter">1 / ${assets.screenshots.length}</div>
+        </div>
+        <div class="gallery-thumbnails" role="list" aria-label="Screenshot thumbnails">
+          ${assets.screenshots.map((s, idx) => {
+            const c = captions[s.index] ? this.escapeHtml(captions[s.index]) : `Screenshot ${s.index}`;
+            const src = s.uri.toString();
+            return `<button role="listitem" class="thumb ${idx===0?'active':''}" data-index="${idx}" aria-label="Show screenshot ${idx+1}: ${c}" aria-current="${idx===0?'true':'false'}"><img src="${src}" alt="${c}" /></button>`;
+          }).join('')}
         </div>
       </div>`;
-    return `<div class="wporg-screenshots" data-gallery>${items}</div>${lightbox}`;
+    return mainViewer;
   }
 
   private generateValidationSummary(validation: ValidationResult): string {

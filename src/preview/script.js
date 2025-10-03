@@ -240,81 +240,74 @@
   }
 
   // =============================
-  // Screenshot Gallery Lightbox
+  // Embedded Screenshot Gallery
   // =============================
-  function initGallery() {
-    const galleryRoot = document.querySelector('.wporg-screenshots[data-gallery]');
-    const lightbox = document.querySelector('.wporg-gallery-lightbox');
-    if (!galleryRoot || !lightbox) return;
+  function initEmbeddedGallery() {
+    const galleryWrapper = document.querySelector('.wporg-gallery-embedded');
+    if (!galleryWrapper) return;
+    const thumbnails = Array.from(galleryWrapper.querySelectorAll('.gallery-thumbnails .thumb'));
+    const imgEl = galleryWrapper.querySelector('.gallery-image');
+    const captionEl = galleryWrapper.querySelector('.gallery-caption');
+    const counterEl = galleryWrapper.querySelector('.gallery-counter');
+    const prevBtn = galleryWrapper.querySelector('.gallery-inline-nav.prev');
+    const nextBtn = galleryWrapper.querySelector('.gallery-inline-nav.next');
+    if (!thumbnails.length || !imgEl || !captionEl || !counterEl) return;
 
-    const figures = Array.from(galleryRoot.querySelectorAll('.wporg-screenshot'));
-    const imgEl = lightbox.querySelector('.gallery-image');
-    const captionEl = lightbox.querySelector('.gallery-caption');
-    const counterEl = lightbox.querySelector('.gallery-counter');
     let current = 0;
-    let lastFocused = null;
 
-    function open(index) {
-      if (index < 0 || index >= figures.length) return;
+    function update(index) {
+      if (index < 0 || index >= thumbnails.length) return;
       current = index;
-      const fig = figures[current];
-      const img = fig.querySelector('img');
-      if (!img) return;
-      imgEl.src = img.src;
-      imgEl.alt = img.alt || '';
-      captionEl.textContent = fig.querySelector('figcaption')?.textContent || '';
-      counterEl.textContent = `${current + 1} / ${figures.length}`;
-      lightbox.hidden = false;
-      document.body.style.overflow = 'hidden';
-      lastFocused = document.activeElement;
-      lightbox.querySelector('.gallery-close').focus();
+      thumbnails.forEach((t,i)=>{
+        const active = i===current;
+        t.classList.toggle('active', active);
+        t.setAttribute('aria-current', active? 'true':'false');
+      });
+      const activeThumb = thumbnails[current];
+      const img = activeThumb.querySelector('img');
+      if (img) {
+        imgEl.src = img.src;
+        imgEl.alt = img.alt || '';
+        captionEl.textContent = img.alt || '';
+      }
+      counterEl.textContent = `${current+1} / ${thumbnails.length}`;
+      prevBtn.disabled = current === 0;
+      nextBtn.disabled = current === thumbnails.length -1;
     }
 
-    function close() {
-      lightbox.hidden = true;
-      document.body.style.overflow = '';
-      if (lastFocused && typeof lastFocused.focus === 'function') {
-        lastFocused.focus();
-      }
-    }
-
-    function next() { open((current + 1) % figures.length); }
-    function prev() { open((current - 1 + figures.length) % figures.length); }
-
-    galleryRoot.addEventListener('click', e => {
-      const btn = e.target.closest('.screenshot-thumb');
-      if (!btn) return;
-      const fig = btn.closest('.wporg-screenshot');
-      if (!fig) return;
-      const idx = figures.indexOf(fig);
-      open(idx);
+    thumbnails.forEach((btn, idx)=>{
+      btn.addEventListener('click', ()=> update(idx));
+      btn.addEventListener('keydown', e => {
+        let targetIdx = null;
+        switch (e.key) {
+          case 'ArrowRight': targetIdx = (idx + 1) % thumbnails.length; break;
+          case 'ArrowLeft': targetIdx = (idx - 1 + thumbnails.length) % thumbnails.length; break;
+          case 'Home': targetIdx = 0; break;
+          case 'End': targetIdx = thumbnails.length -1; break;
+        }
+        if (targetIdx !== null) {
+          e.preventDefault();
+          thumbnails[targetIdx].focus();
+          update(targetIdx);
+        }
+      });
     });
 
-    lightbox.addEventListener('click', e => {
-      const actionBtn = e.target.closest('[data-action]');
-      if (!actionBtn) return;
-      const action = actionBtn.getAttribute('data-action');
-      switch (action) {
-        case 'close': close(); break;
-        case 'prev': prev(); break;
-        case 'next': next(); break;
-      }
-    });
+    prevBtn?.addEventListener('click', ()=> update(current -1));
+    nextBtn?.addEventListener('click', ()=> update(current +1));
 
     document.addEventListener('keydown', e => {
-      if (lightbox.hidden) return;
-      switch (e.key) {
-        case 'Escape': close(); break;
-        case 'ArrowRight': next(); break;
-        case 'ArrowLeft': prev(); break;
+      if (document.activeElement && galleryWrapper.contains(document.activeElement)) {
+        if (e.key === 'ArrowRight') { e.preventDefault(); update(current+1); }
+        else if (e.key === 'ArrowLeft') { e.preventDefault(); update(current-1); }
       }
     });
   }
 
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initGallery);
+    document.addEventListener('DOMContentLoaded', initEmbeddedGallery);
   } else {
-    initGallery();
+    initEmbeddedGallery();
   }
 
   // Watch for theme changes
