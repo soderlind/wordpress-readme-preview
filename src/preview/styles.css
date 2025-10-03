@@ -79,7 +79,8 @@
 	--overlay-medium: rgba(255, 255, 255, 0.1);
 
 	/* Dark theme tag adjustments for higher contrast */
-	--tag-bg: #0d5d85; /* slightly deeper than wp-blue for contrast against dark bg */
+	--tag-bg: #0d5d85;
+	/* slightly deeper than wp-blue for contrast against dark bg */
 	--tag-text: #f3f9fb;
 	--tag-border: #29b6f6;
 }
@@ -316,6 +317,29 @@ body {
 	border: 1px solid var(--tag-border);
 	box-shadow: 0 1px 2px var(--shadow-light);
 	letter-spacing: .25px;
+}
+
+/* Light theme specific stronger contrast */
+[data-vscode-theme-kind="vscode-light"] .tag:not(.no-contrast-adjust),
+[data-vscode-theme-kind="vscode-high-contrast-light"] .tag:not(.no-contrast-adjust),
+body.forced-light .tag:not(.no-contrast-adjust),
+.readme-preview.forced-light .tag:not(.no-contrast-adjust) {
+	--tag-bg: #045280; /* darker blue for contrast */
+	--tag-text: #ffffff;
+	--tag-border: #02334f;
+}
+
+[data-vscode-theme-kind="vscode-light"] .tag:not(.no-contrast-adjust):hover,
+[data-vscode-theme-kind="vscode-high-contrast-light"] .tag:not(.no-contrast-adjust):hover,
+body.forced-light .tag:not(.no-contrast-adjust):hover,
+.readme-preview.forced-light .tag:not(.no-contrast-adjust):hover {
+	--tag-bg: #056094;
+	--tag-border: #034569;
+}
+
+.tag:focus-visible {
+	outline: 2px solid var(--wp-blue-light);
+	outline-offset: 2px;
 }
 
 .missing {
