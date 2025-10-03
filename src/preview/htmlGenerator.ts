@@ -26,6 +26,8 @@ export class HtmlGenerator {
     validation: ValidationResult, 
     options: HtmlGeneratorOptions
   ): Promise<string> {
+    // Store sections for later caption parsing (screenshots)
+    (this as any).lastParsedReadmeSections = readme.sections;
     const { webview, extensionUri } = options;
     const theme = options.theme || 'classic';
     
@@ -81,8 +83,7 @@ export class HtmlGenerator {
       { id: 'installation', title: 'Installation' },
       { id: 'faq', title: 'FAQ' },
       { id: 'screenshots', title: 'Screenshots' },
-      { id: 'changelog', title: 'Changelog' },
-      { id: 'reviews', title: 'Reviews' } // placeholder; real data not parsed yet
+      { id: 'changelog', title: 'Changelog' }
     ];
 
     // Map readme sections to tab panels by simple title matching
@@ -105,8 +106,6 @@ export class HtmlGenerator {
         // Extract only inner section content (strip wrapper) for cleaner tab
         const sectionHtml = sectionMap[t.title.toLowerCase()] || '';
         content = sectionHtml;
-      } else if (t.id === 'reviews') {
-        content = '<div class="tab-placeholder">Reviews are not available in local preview.</div>';
       } else {
         content = '<div class="tab-placeholder">No content for this section.</div>';
       }
@@ -156,7 +155,27 @@ export class HtmlGenerator {
     if (!assets || !assets.screenshots || assets.screenshots.length === 0) {
       return '<div class="tab-placeholder">No screenshots found.</div>';
     }
-    const items = assets.screenshots.map(s => `<figure class="wporg-screenshot"><img src="${s.uri}" alt="Screenshot ${s.index}" /><figcaption>Screenshot ${s.index}</figcaption></figure>`).join('');
+    // Attempt to locate a Screenshots section to parse captions
+    const screenshotsSection = (this as any).lastParsedReadmeSections as ReadmeSection[] | undefined; // fallback if stored
+    let captions: { [index: number]: string } = {};
+    if (screenshotsSection) {
+      const section = screenshotsSection.find(s => s.title.toLowerCase() === 'screenshots');
+      if (section) {
+        // Lines like '1. First screenshot description'
+        const lines = section.content.split(/\r?\n/);
+        for (const line of lines) {
+          const match = line.match(/^(\d+)\.\s+(.+?)\s*$/);
+          if (match) {
+            const idx = parseInt(match[1], 10);
+            captions[idx] = match[2];
+          }
+        }
+      }
+    }
+    const items = assets.screenshots.map(s => {
+      const caption = captions[s.index] ? this.escapeHtml(captions[s.index]) : `Screenshot ${s.index}`;
+      return `<figure class="wporg-screenshot"><img src="${s.uri}" alt="${caption}" /><figcaption>${caption}</figcaption></figure>`;
+    }).join('');
     return `<div class="wporg-screenshots">${items}</div>`;
   }
 
@@ -333,6 +352,16 @@ export class HtmlGenerator {
 
   private generateSection(section: ReadmeSection): string {
     const sectionId = this.generateSectionId(section.title);
+    // Define canonical alias IDs that tabbed theme expects
+    const canonicalIds: { [key: string]: string } = {
+      'description': 'description',
+      'installation': 'installation',
+      'faq': 'faq',
+      'frequently-asked-questions': 'faq',
+      'screenshots': 'screenshots',
+      'changelog': 'changelog'
+    };
+    const aliasId = canonicalIds[sectionId];
     
     // Process FAQ questions (= Question =) as H3 headers
     let processedContent = section.content;
@@ -350,6 +379,7 @@ export class HtmlGenerator {
 
     return `
       <div class="readme-section" id="${sectionId}">
+        ${aliasId && aliasId !== sectionId ? `<span id="${aliasId}" class="section-alias"></span>` : ''}
         <h2 class="section-title">${this.escapeHtml(section.title)}</h2>
         <div class="section-content">
           ${finalContent}
