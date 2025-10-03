@@ -7,6 +7,7 @@ Stable tag: 1.5.3
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
+
 Run wp-cron on all public sites in a multisite network (REST API based). Formerly known as DSS Cron.
 
 == Description ==

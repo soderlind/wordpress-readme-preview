@@ -72,6 +72,42 @@ export function activate(context: vscode.ExtensionContext) {
     ]
   });
 
+  // Completion provider for section headings after '==' at start of line
+  const SECTION_HEADINGS = [
+    'Description',
+    'Installation',
+    'Frequently Asked Questions',
+    'Screenshots',
+    'Changelog',
+    'Upgrade Notice'
+  ];
+
+  const sectionCompletionProvider = vscode.languages.registerCompletionItemProvider(
+    { language: 'readme-txt', scheme: 'file' },
+    {
+      provideCompletionItems(document, position) {
+        const line = document.lineAt(position).text;
+        const prefix = line.substring(0, position.character);
+        // Trigger only if line starts with optional whitespace then '==' and no closing '==' yet
+        const match = prefix.match(/^\s*==\s?(.*)$/);
+        if (!match) {
+          return undefined;
+        }
+        // If closing '==' already present, do not offer
+        if (/==\s.*==/.test(line)) {
+          return undefined;
+        }
+        return SECTION_HEADINGS.map(h => {
+          const item = new vscode.CompletionItem(h, vscode.CompletionItemKind.Module);
+          item.insertText = `== ${h} ==`;
+          item.detail = 'WordPress readme section';
+          item.sortText = '0_' + h;
+          return item;
+        });
+      },
+    }, ' '
+  );
+
   // Add status bar item
   const statusBarItem = createStatusBarItem();
   updateStatusBarItem(statusBarItem);
@@ -100,6 +136,7 @@ export function activate(context: vscode.ExtensionContext) {
     onDidChangeActiveTextEditor,
     onDidChangeTextDocument,
     readmeLanguageConfig,
+    sectionCompletionProvider,
     statusBarItem,
     previewProvider,
     diagnosticCollection
