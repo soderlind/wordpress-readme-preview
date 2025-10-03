@@ -16,6 +16,7 @@ A Visual Studio Code extension that provides live preview and validation for Wor
 ✅ **False Positive Prevention** - Accurate detection without hallucinated errors  
 ✅ **Tabbed wordpress.org Layout** - Authentic multi-tab presentation (Description, Installation, FAQ, Screenshots, Changelog)  
 ✅ **Accessible Screenshot Gallery** - Keyboard & screen reader friendly with thumbnails  
+✅ **Section Heading IntelliSense** - Type `==` then space for valid section name completions  
 
 ![Alt text](media/example.png)
 
