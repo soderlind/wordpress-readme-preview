@@ -12,7 +12,9 @@
     
     switch (message.command) {
       case 'syncScroll':
-        syncPreviewScroll(message.scrollPercentage);
+        if (isSyncEnabled()) {
+          syncPreviewScroll(message.scrollPercentage);
+        }
         break;
     }
   });
@@ -41,7 +43,7 @@
 
   // Handle scroll synchronization from preview to editor
   window.addEventListener('scroll', () => {
-    if (isScrollingSynced) {
+    if (isScrollingSynced || !isSyncEnabled()) {
       return; // Don't sync back while we're syncing from editor
     }
 
@@ -158,6 +160,11 @@
 
   // Initial theme detection
   updateTheme();
+
+  function isSyncEnabled() {
+    const container = document.querySelector('.readme-preview');
+    return container && container.getAttribute('data-sync-scrolling') === 'on';
+  }
 
   // Tab interface logic for wordpress-org theme
   function initTabs() {

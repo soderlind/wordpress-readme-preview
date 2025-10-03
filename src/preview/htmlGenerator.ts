@@ -9,6 +9,7 @@ export interface HtmlGeneratorOptions {
   extensionUri: vscode.Uri;
   theme?: string;
   assets?: PluginAssets;
+  syncScrolling?: boolean;
 }
 
 export interface PluginAssets {
@@ -71,7 +72,7 @@ export class HtmlGenerator {
         </script>
       </head>
       <body>
-        <div class="readme-preview theme-${theme}">
+  <div class="readme-preview theme-${theme}" data-sync-scrolling="${options.syncScrolling ? 'on' : 'off'}">
           ${theme === 'wordpress-org' 
             ? this.generateTabbedLayout(readme, validation, processedAssets) 
             : `${this.generateValidationSummary(validation)}${this.generateHeader(readme.header, validation)}${this.generateSections(readme.sections)}`}
@@ -198,6 +199,10 @@ export class HtmlGenerator {
           }
         }
       }
+    }
+    // If no captions parsed at all, hide gallery entirely per requirement
+    if (Object.keys(captions).length === 0) {
+      return '';
     }
     const items = assets.screenshots.map(s => {
       const caption = captions[s.index] ? this.escapeHtml(captions[s.index]) : `Screenshot ${s.index}`;

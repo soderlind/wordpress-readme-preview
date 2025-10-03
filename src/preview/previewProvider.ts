@@ -55,6 +55,18 @@ export class ReadmePreviewProvider {
       return panel;
     }
 
+    // Add plugin directory and common asset dirs to resource roots so images load
+    const pluginDir = vscode.Uri.joinPath(resource, '..');
+    const wpOrgDir = vscode.Uri.joinPath(pluginDir, '.wordpress-org');
+    const assetsDir = vscode.Uri.joinPath(pluginDir, 'assets');
+    const localResourceRoots = [
+      vscode.Uri.joinPath(this.context.extensionUri, 'media'),
+      vscode.Uri.joinPath(this.context.extensionUri, 'out', 'preview'),
+      pluginDir,
+      wpOrgDir,
+      assetsDir
+    ];
+
     panel = vscode.window.createWebviewPanel(
       ReadmePreviewProvider.viewType,
       this.getPreviewTitle(resource),
@@ -62,10 +74,7 @@ export class ReadmePreviewProvider {
       {
         enableScripts: true,
         retainContextWhenHidden: true,
-        localResourceRoots: [
-          vscode.Uri.joinPath(this.context.extensionUri, 'media'),
-          vscode.Uri.joinPath(this.context.extensionUri, 'out', 'preview')
-        ]
+        localResourceRoots
       }
     );
 
@@ -118,14 +127,16 @@ export class ReadmePreviewProvider {
         this.assetsCache.set(document.uri.toString(), assets);
       }
       const config = vscode.workspace.getConfiguration('wordpress-readme');
-      const theme = config.get<string>('preview.theme', 'classic');
+  const theme = config.get<string>('preview.theme', 'classic');
+  const syncScrolling = config.get<boolean>('preview.syncScrolling', false);
       
       const html = await this.htmlGenerator.generateHtml(parsed, validation, {
         resource: document.uri,
         webview: panel.webview,
         extensionUri: this.context.extensionUri,
         theme,
-        assets
+        assets,
+        syncScrolling
       });
 
       panel.webview.html = html;
