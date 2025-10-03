@@ -12,7 +12,9 @@
     
     switch (message.command) {
       case 'syncScroll':
-        syncPreviewScroll(message.scrollPercentage);
+        if (isSyncEnabled()) {
+          syncPreviewScroll(message.scrollPercentage);
+        }
         break;
     }
   });
@@ -41,7 +43,7 @@
 
   // Handle scroll synchronization from preview to editor
   window.addEventListener('scroll', () => {
-    if (isScrollingSynced) {
+    if (isScrollingSynced || !isSyncEnabled()) {
       return; // Don't sync back while we're syncing from editor
     }
 
@@ -158,6 +160,155 @@
 
   // Initial theme detection
   updateTheme();
+
+  function isSyncEnabled() {
+    const container = document.querySelector('.readme-preview');
+    return container && container.getAttribute('data-sync-scrolling') === 'on';
+  }
+
+  // Tab interface logic for wordpress-org theme
+  function initTabs() {
+    const tablist = document.querySelector('.wporg-tabs');
+    if (!tablist) return; // Not in wordpress-org theme
+    const tabs = Array.from(tablist.querySelectorAll('[role="tab"]'));
+    const panels = Array.from(document.querySelectorAll('.wporg-tabpanel'));
+
+    function activateTab(tab, setFocus = true) {
+      const id = tab.id.replace('tab-', 'panel-');
+      tabs.forEach(t => {
+        const selected = t === tab;
+        t.classList.toggle('active', selected);
+        t.setAttribute('aria-selected', String(selected));
+        t.tabIndex = selected ? 0 : -1;
+      });
+      panels.forEach(p => {
+        const match = p.id === id;
+        p.classList.toggle('active', match);
+        p.hidden = !match;
+      });
+      if (setFocus) tab.focus();
+      // Update hash without default jump
+      if (history.replaceState) {
+        history.replaceState(null, '', '#' + tab.id.substring(4));
+      }
+    }
+
+    tabs.forEach(tab => {
+      tab.addEventListener('click', e => {
+        e.preventDefault();
+        activateTab(tab, false);
+      });
+      tab.addEventListener('keydown', e => {
+        const idx = tabs.indexOf(tab);
+        let nextIdx = null;
+        switch (e.key) {
+          case 'ArrowRight':
+          case 'ArrowDown':
+            nextIdx = (idx + 1) % tabs.length; break;
+          case 'ArrowLeft':
+          case 'ArrowUp':
+            nextIdx = (idx - 1 + tabs.length) % tabs.length; break;
+          case 'Home':
+            nextIdx = 0; break;
+          case 'End':
+            nextIdx = tabs.length - 1; break;
+          default:
+            return;
+        }
+        e.preventDefault();
+        activateTab(tabs[nextIdx]);
+      });
+    });
+
+    // Deep link support (#description etc.)
+    const hash = window.location.hash.replace('#', '');
+    if (hash) {
+      const deepTab = document.getElementById('tab-' + hash);
+      if (deepTab) activateTab(deepTab, false);
+    } else {
+      // Ensure first tab is active & panels hidden state consistent
+      const first = tabs[0];
+      if (first) activateTab(first, false);
+    }
+  }
+
+  // Initialize tabs after DOM ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initTabs);
+  } else {
+    initTabs();
+  }
+
+  // =============================
+  // Embedded Screenshot Gallery
+  // =============================
+  function initEmbeddedGallery() {
+    const galleryWrapper = document.querySelector('.wporg-gallery-embedded');
+    if (!galleryWrapper) return;
+    const thumbnails = Array.from(galleryWrapper.querySelectorAll('.gallery-thumbnails .thumb'));
+    const imgEl = galleryWrapper.querySelector('.gallery-image');
+    const captionEl = galleryWrapper.querySelector('.gallery-caption');
+    const counterEl = galleryWrapper.querySelector('.gallery-counter');
+    const prevBtn = galleryWrapper.querySelector('.gallery-inline-nav.prev');
+    const nextBtn = galleryWrapper.querySelector('.gallery-inline-nav.next');
+    if (!thumbnails.length || !imgEl || !captionEl || !counterEl) return;
+
+    let current = 0;
+
+    function update(index) {
+      if (index < 0 || index >= thumbnails.length) return;
+      current = index;
+      thumbnails.forEach((t,i)=>{
+        const active = i===current;
+        t.classList.toggle('active', active);
+        t.setAttribute('aria-current', active? 'true':'false');
+      });
+      const activeThumb = thumbnails[current];
+      const img = activeThumb.querySelector('img');
+      if (img) {
+        imgEl.src = img.src;
+        imgEl.alt = img.alt || '';
+        captionEl.textContent = img.alt || '';
+      }
+      counterEl.textContent = `${current+1} / ${thumbnails.length}`;
+      prevBtn.disabled = current === 0;
+      nextBtn.disabled = current === thumbnails.length -1;
+    }
+
+    thumbnails.forEach((btn, idx)=>{
+      btn.addEventListener('click', ()=> update(idx));
+      btn.addEventListener('keydown', e => {
+        let targetIdx = null;
+        switch (e.key) {
+          case 'ArrowRight': targetIdx = (idx + 1) % thumbnails.length; break;
+          case 'ArrowLeft': targetIdx = (idx - 1 + thumbnails.length) % thumbnails.length; break;
+          case 'Home': targetIdx = 0; break;
+          case 'End': targetIdx = thumbnails.length -1; break;
+        }
+        if (targetIdx !== null) {
+          e.preventDefault();
+          thumbnails[targetIdx].focus();
+          update(targetIdx);
+        }
+      });
+    });
+
+    prevBtn?.addEventListener('click', ()=> update(current -1));
+    nextBtn?.addEventListener('click', ()=> update(current +1));
+
+    document.addEventListener('keydown', e => {
+      if (document.activeElement && galleryWrapper.contains(document.activeElement)) {
+        if (e.key === 'ArrowRight') { e.preventDefault(); update(current+1); }
+        else if (e.key === 'ArrowLeft') { e.preventDefault(); update(current-1); }
+      }
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initEmbeddedGallery);
+  } else {
+    initEmbeddedGallery();
+  }
 
   // Watch for theme changes
   const observer = new MutationObserver(function(mutations) {

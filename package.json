@@ -2,8 +2,8 @@
 	"name": "wordpress-readme-preview",
 	"displayName": "WordPress Readme Preview",
 	"description": "Preview WordPress readme.txt files with accurate rendering and validation",
-	"version": "0.1.0",
-	"publisher": "wordpress-readme-preview",
+	"version": "0.1.1",
+	"publisher": "persoderlind",
 	"engines": {
 		"vscode": "^1.74.0"
 	},
@@ -17,9 +17,21 @@
 		"readme",
 		"preview",
 		"plugin",
-		"markdown"
+		"markdown",
+		"validation",
+		"wordpress.org",
+		"wp-plugin",
+		"readme.txt"
 	],
 	"license": "GPL-2.0-or-later",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/soderlind/wordpress-readme-preview.git"
+	},
+	"bugs": {
+		"url": "https://github.com/soderlind/wordpress-readme-preview/issues"
+	},
+	"homepage": "https://github.com/soderlind/wordpress-readme-preview#readme",
 	"icon": "media/icon.png",
 	"galleryBanner": {
 		"color": "#21759B",
@@ -153,10 +165,29 @@
 					"default": false,
 					"description": "Automatically open preview when opening a readme.txt file"
 				},
+				"wordpress-readme.preview.backgroundMode": {
+					"type": "string",
+					"enum": [
+						"auto",
+						"light",
+						"dark"
+					],
+					"default": "auto",
+					"description": "Controls preview background: 'auto' follows editor theme, or force 'light' / 'dark' for the preview panel only"
+				},
 				"wordpress-readme.preview.syncScrolling": {
 					"type": "boolean",
-					"default": true,
+					"default": false,
 					"description": "Synchronize scrolling between editor and preview"
+				},
+				"wordpress-readme.preview.theme": {
+					"type": "string",
+					"enum": [
+						"classic",
+						"wordpress-org"
+					],
+					"default": "classic",
+					"description": "Preview theme style: 'classic' for single-page or 'wordpress-org' for tabbed layout with plugin assets"
 				},
 				"wordpress-readme.validation.enabled": {
 					"type": "boolean",

@@ -9,6 +9,7 @@ export class ReadmePreviewProvider {
 
   private panels = new Map<string, vscode.WebviewPanel>();
   private disposables: vscode.Disposable[] = [];
+  private assetsCache = new Map<string, PluginAssets>();
 
   constructor(
     private readonly context: vscode.ExtensionContext,
@@ -54,6 +55,18 @@ export class ReadmePreviewProvider {
       return panel;
     }
 
+    // Add plugin directory and common asset dirs to resource roots so images load
+    const pluginDir = vscode.Uri.joinPath(resource, '..');
+    const wpOrgDir = vscode.Uri.joinPath(pluginDir, '.wordpress-org');
+    const assetsDir = vscode.Uri.joinPath(pluginDir, 'assets');
+    const localResourceRoots = [
+      vscode.Uri.joinPath(this.context.extensionUri, 'media'),
+      vscode.Uri.joinPath(this.context.extensionUri, 'out', 'preview'),
+      pluginDir,
+      wpOrgDir,
+      assetsDir
+    ];
+
     panel = vscode.window.createWebviewPanel(
       ReadmePreviewProvider.viewType,
       this.getPreviewTitle(resource),
@@ -61,10 +74,7 @@ export class ReadmePreviewProvider {
       {
         enableScripts: true,
         retainContextWhenHidden: true,
-        localResourceRoots: [
-          vscode.Uri.joinPath(this.context.extensionUri, 'media'),
-          vscode.Uri.joinPath(this.context.extensionUri, 'out', 'preview')
-        ]
+        localResourceRoots
       }
     );
 
@@ -110,11 +120,26 @@ export class ReadmePreviewProvider {
       const content = document.getText();
       const parsed = ReadmeParser.parse(content);
       const validation = ReadmeValidator.validate(parsed);
+      // Re-collect assets every update to ensure new screenshots are picked up
+      // (previous caching caused only initially found screenshots to display).
+      // If performance becomes an issue, introduce a timestamp/TTL based cache.
+      const assets = await this.collectPluginAssets(document.uri);
+      this.assetsCache.set(document.uri.toString(), assets);
+    const config = vscode.workspace.getConfiguration('wordpress-readme');
+    const theme = config.get<string>('preview.theme', 'classic');
+    const syncScrolling = config.get<boolean>('preview.syncScrolling', false);
+  const rawBackground = config.get<string>('preview.backgroundMode', 'auto');
+  const allowedModes = new Set(['auto','light','dark']);
+  const backgroundMode = (allowedModes.has(rawBackground!) ? rawBackground : 'auto') as 'auto' | 'light' | 'dark';
       
       const html = await this.htmlGenerator.generateHtml(parsed, validation, {
         resource: document.uri,
         webview: panel.webview,
-        extensionUri: this.context.extensionUri
+        extensionUri: this.context.extensionUri,
+        theme,
+        assets,
+        syncScrolling,
+        backgroundMode
       });
 
       panel.webview.html = html;
@@ -357,3 +382,82 @@ export class ReadmePreviewProvider {
     this.panels.clear();
   }
 }
+
+// Asset discovery types & helper implementation (will be used by alternate theme)
+interface PluginAssets {
+  banner?: { large?: vscode.Uri; small?: vscode.Uri };
+  icons?: { [size: string]: vscode.Uri };
+  screenshots?: { index: number; uri: vscode.Uri; filename: string }[];
+  assetDirs: vscode.Uri[];
+}
+
+// Extend class with asset discovery logic
+export interface ReadmePreviewProvider {
+  collectPluginAssets(resource: vscode.Uri): Promise<PluginAssets>;
+}
+
+ReadmePreviewProvider.prototype.collectPluginAssets = async function(resource: vscode.Uri): Promise<PluginAssets> {
+  const pluginDir = vscode.Uri.joinPath(resource, '..');
+  const candidateDirNames = ['.wordpress-org', 'assets'];
+  const assetDirs: vscode.Uri[] = [];
+
+  for (const dirName of candidateDirNames) {
+    const dirUri = vscode.Uri.joinPath(pluginDir, dirName);
+    try {
+      const stat = await vscode.workspace.fs.stat(dirUri);
+      if (stat.type === vscode.FileType.Directory) {
+        assetDirs.push(dirUri);
+      }
+    } catch {
+      // ignore missing
+    }
+  }
+
+  const assets: PluginAssets = { assetDirs, screenshots: [], icons: {} };
+  if (assetDirs.length === 0) {
+    return assets; // nothing found
+  }
+
+  const bannerLargeRegex = /^banner-(?:1544x500|1544x500@2x)\.(png|jpe?g)$/i;
+  const bannerSmallRegex = /^banner-(?:772x250|772x250@2x)\.(png|jpe?g)$/i;
+  const iconRegex = /^icon-(\d{2,3})x\1\.(png|jpe?g|svg)$/i; // icon-256x256.png
+  const screenshotRegex = /^screenshot-(\d+)\.(png|jpe?g|gif)$/i;
+
+  for (const dir of assetDirs) {
+    try {
+      const entries = await vscode.workspace.fs.readDirectory(dir);
+      for (const [name, type] of entries) {
+        if (type !== vscode.FileType.File) continue;
+        if (bannerLargeRegex.test(name)) {
+          assets.banner = assets.banner || {};
+            assets.banner.large = vscode.Uri.joinPath(dir, name);
+        } else if (bannerSmallRegex.test(name)) {
+          assets.banner = assets.banner || {};
+          assets.banner.small = vscode.Uri.joinPath(dir, name);
+        } else {
+          const iconMatch = name.match(iconRegex);
+          if (iconMatch) {
+            const size = iconMatch[1];
+            assets.icons![size] = vscode.Uri.joinPath(dir, name);
+            continue;
+          }
+          const screenshotMatch = name.match(screenshotRegex);
+          if (screenshotMatch) {
+            assets.screenshots!.push({
+              index: parseInt(screenshotMatch[1], 10),
+              uri: vscode.Uri.joinPath(dir, name),
+              filename: name
+            });
+            continue;
+          }
+        }
+      }
+    } catch (err) {
+      console.warn('Error reading asset directory', dir.toString(), err);
+    }
+  }
+
+  // Sort screenshots by index
+  assets.screenshots!.sort((a, b) => a.index - b.index);
+  return assets;
+};

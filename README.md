@@ -11,8 +11,13 @@ A Visual Studio Code extension that provides live preview and validation for Wor
 ✅ **Context Menus** - Right-click support in explorer and editor tabs  
 ✅ **Scroll Synchronization** - Keep editor and preview in sync when scrolling  
 ✅ **Theme Support** - Automatic dark/light theme matching with VS Code  
+✅ **Forced Background Modes** - Override preview to always light or dark  
 ✅ **Quality Scoring** - Get 0-100 quality score with improvement suggestions  
 ✅ **False Positive Prevention** - Accurate detection without hallucinated errors  
+✅ **Tabbed wordpress.org Layout** - Authentic multi-tab presentation (Description, Installation, FAQ, Screenshots, Changelog)  
+✅ **Accessible Screenshot Gallery** - Keyboard & screen reader friendly with thumbnails  
+
+![Alt text](media/example.png)
 
 ## Quick Start
 
@@ -103,41 +108,39 @@ A Visual Studio Code extension that provides live preview and validation for Wor
 
 ## Configuration
 
-Customize the extension behavior via VS Code settings:
+All settings live under the `wordpress-readme.*` namespace.
 
-```json
+| Setting | Type | Default | Description |
+|---------|------|---------|-------------|
+| `wordpress-readme.preview.autoOpen` | boolean | false | Auto-open preview when a `readme.txt` is opened |
+| `wordpress-readme.preview.theme` | enum(classic|wordpress-org) | classic | Select layout style |
+| `wordpress-readme.preview.backgroundMode` | enum(auto|light|dark) | auto | Force preview light/dark or follow editor theme |
+| `wordpress-readme.preview.syncScrolling` | boolean | false | Synchronize scroll position between editor & preview |
+| `wordpress-readme.validation.enabled` | boolean | true | Enable live validation |
+| `wordpress-readme.validation.showWarnings` | boolean | true | Include warnings (not just errors) |
+| `wordpress-readme.contextMenu.showInExplorer` | boolean | true | Show commands in Explorer context menu |
+| `wordpress-readme.contextMenu.showInEditorTab` | boolean | true | Show commands in editor tab context menu |
+| `wordpress-readme.contextMenu.showInEditor` | boolean | true | Show commands in editor content (text area) context menu |
+| `wordpress-readme.contextMenu.showPreview` | boolean | true | Enable "Open Preview" entries |
+| `wordpress-readme.contextMenu.showPreviewToSide` | boolean | true | Enable "Open Preview to the Side" entries |
+| `wordpress-readme.contextMenu.showValidation` | boolean | true | Enable validation command entries |
+
+Example customization snippet:
+
+```jsonc
 {
-  // Auto-open preview when opening readme.txt files
-  "wordpress-readme.preview.autoOpen": false,
-  
-  // Enable scroll synchronization between editor and preview
+  "wordpress-readme.preview.theme": "wordpress-org",
+  "wordpress-readme.preview.backgroundMode": "dark",
   "wordpress-readme.preview.syncScrolling": true,
-  
-  // Enable automatic validation as you type
-  "wordpress-readme.validation.enabled": true,
-  
-  // Show validation warnings (not just errors)
-  "wordpress-readme.validation.showWarnings": true,
-  
-  // Context menu configuration - enable/disable individual menu items
-  "wordpress-readme.contextMenu.openPreview": true,
-  "wordpress-readme.contextMenu.openPreviewToSide": true,
-  "wordpress-readme.contextMenu.validate": true,
-  "wordpress-readme.contextMenu.openFile": true,
-  "wordpress-readme.contextMenu.separator1": true,
-  "wordpress-readme.contextMenu.separator2": true
+  "wordpress-readme.validation.showWarnings": false
 }
 ```
 
-### Context Menu Customization
+### Forced Background Mode
+Use `backgroundMode` to view your readme in a fixed light or dark palette regardless of the editor theme. Great for checking color/contrast of inline badges or screenshots.
 
-You can customize which context menu items appear by adjusting the `wordpress-readme.contextMenu.*` settings:
-
-- `openPreview` - Show "Open Preview" option
-- `openPreviewToSide` - Show "Open Preview to the Side" option  
-- `validate` - Show "Validate Readme" option
-- `openFile` - Show "Open File" option
-- `separator1` / `separator2` - Show menu separators for organization
+### Tag Appearance
+Tags are rendered as simple uppercase bracketed items (e.g. `[SEO] [CACHE]`) for clarity and compactness—mirroring a neutral, style-light presentation for quick scanning.
 
 ## Available Commands
 
@@ -187,6 +190,51 @@ All context menus provide instant access to preview and validation commands.
 - **Consistent Branding** - Maintains WordPress.org visual identity
 - **Border & Shadow Adaptation** - Adjusts visual elements for each theme
 - **Code Block Styling** - Theme-aware syntax highlighting backgrounds
+
+### Alternate Layout: wordpress-org Theme
+
+You can switch to an alternative WordPress.org–style tabbed layout that more closely mirrors the official plugin directory presentation.
+
+Setting:
+```jsonc
+"wordpress-readme.preview.theme": "wordpress-org" // default is "classic"
+```
+
+Features of the `wordpress-org` theme:
+- Tabbed interface (Description, Installation, FAQ, Screenshots, Changelog, Reviews placeholder)
+- Banner + Icon rendering (auto-detected)
+- Responsive, accessible screenshot gallery (thumbnails + keyboard navigation + focus outlines)
+- Keyboard navigation: Arrow keys / Home / End across tabs and thumbnails
+- Deep linking using URL hash (e.g. `#faq` selects the FAQ tab)
+- Graceful placeholders when a tab has no content
+
+If a tab has no corresponding content it displays a subtle placeholder. Reviews are not locally generated (placeholder only).
+
+### Plugin Asset Auto-Discovery
+
+When using the `wordpress-org` theme the extension automatically searches for standard plugin assets next to your `readme.txt`:
+
+Search order (first existing directory wins precedence if duplicates):
+1. `.wordpress-org/`
+2. `assets/`
+
+Supported file patterns (case-insensitive):
+- Banners: `banner-1544x500.(png|jpg)` (large), `banner-772x250.(png|jpg)` (small)
+- Icons: `icon-256x256.*`, `icon-128x128.*`, `icon-64x64.*`, `icon-32x32.*` (`.png`, `.jpg`, `.jpeg`, `.svg`)
+- Screenshots: `screenshot-1.(png|jpg|jpeg|gif)`, `screenshot-2.*`, etc.
+
+The best available icon size is chosen in order: 256 → 128 → 64 → 32. Screenshots are displayed in ascending numerical order.
+
+If no assets are found the layout gracefully omits the banner/icon/screenshot areas.
+
+This mirrors the conventions used by WordPress.org so you can visually QA your assets before publishing. Gallery supports:
+
+- Click thumbnail to swap main image
+- Arrow key navigation through thumbnails
+- Esc returns focus to the gallery container (when implemented in webview focus scope)
+- Maintains aspect ratio and centers images on varied panel widths
+
+> Tip: Keep your banner image optimized. WordPress.org expects specific dimensions and reasonable file sizes for performance.
 
 ## File Association
 
@@ -255,12 +303,16 @@ Tested up to: 6.3
 💡 **Feature Requests:** Suggest improvements for WordPress.org compliance  
 🔧 **Pull Requests:** Contributions welcome for parser and validation improvements  
 
-# Copyright and License
+## License
 
-WordPress Readme Preview is copyright 2025 Per Soderlind
+GPL-2.0-or-later © 2025 Per Soderlind
 
-WordPress Readme Preview is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 2 of the License, or (at your option) any later version.
+This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 2 of the License, or (at your option) any later version.
 
-WordPress Readme Preview is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
-You should have received a copy of the GNU Lesser General Public License along with the Extension. If not, see http://www.gnu.org/licenses/.
+You should have received a copy of the GNU General Public License along with this program. If not, see https://www.gnu.org/licenses/.
+
+---
+
+Enjoying the extension? Star the repository or open an issue with feedback. Happy publishing!
