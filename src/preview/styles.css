@@ -317,6 +317,7 @@ body {
 	border: 1px solid var(--tag-border);
 	box-shadow: 0 1px 2px var(--shadow-light);
 	letter-spacing: .25px;
+	text-shadow: 0 1px 0 rgba(255,255,255,0.15);
 }
 
 /* Light theme specific stronger contrast */
@@ -324,17 +325,19 @@ body {
 [data-vscode-theme-kind="vscode-high-contrast-light"] .tag:not(.no-contrast-adjust),
 body.forced-light .tag:not(.no-contrast-adjust),
 .readme-preview.forced-light .tag:not(.no-contrast-adjust) {
-	--tag-bg: #045280; /* darker blue for contrast */
+	--tag-bg: #024a73; /* slightly darker for higher luminance contrast */
 	--tag-text: #ffffff;
-	--tag-border: #02334f;
+	--tag-border: #013554;
+	/* Provide stronger perceived foreground via additional glow on white text */
+	text-shadow: 0 1px 0 rgba(0,0,0,0.18), 0 0 2px rgba(255,255,255,0.35);
 }
 
 [data-vscode-theme-kind="vscode-light"] .tag:not(.no-contrast-adjust):hover,
 [data-vscode-theme-kind="vscode-high-contrast-light"] .tag:not(.no-contrast-adjust):hover,
 body.forced-light .tag:not(.no-contrast-adjust):hover,
 .readme-preview.forced-light .tag:not(.no-contrast-adjust):hover {
-	--tag-bg: #056094;
-	--tag-border: #034569;
+	--tag-bg: #035885;
+	--tag-border: #024663;
 }
 
 .tag:focus-visible {
