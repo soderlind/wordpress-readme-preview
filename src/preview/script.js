@@ -239,6 +239,84 @@
     initTabs();
   }
 
+  // =============================
+  // Screenshot Gallery Lightbox
+  // =============================
+  function initGallery() {
+    const galleryRoot = document.querySelector('.wporg-screenshots[data-gallery]');
+    const lightbox = document.querySelector('.wporg-gallery-lightbox');
+    if (!galleryRoot || !lightbox) return;
+
+    const figures = Array.from(galleryRoot.querySelectorAll('.wporg-screenshot'));
+    const imgEl = lightbox.querySelector('.gallery-image');
+    const captionEl = lightbox.querySelector('.gallery-caption');
+    const counterEl = lightbox.querySelector('.gallery-counter');
+    let current = 0;
+    let lastFocused = null;
+
+    function open(index) {
+      if (index < 0 || index >= figures.length) return;
+      current = index;
+      const fig = figures[current];
+      const img = fig.querySelector('img');
+      if (!img) return;
+      imgEl.src = img.src;
+      imgEl.alt = img.alt || '';
+      captionEl.textContent = fig.querySelector('figcaption')?.textContent || '';
+      counterEl.textContent = `${current + 1} / ${figures.length}`;
+      lightbox.hidden = false;
+      document.body.style.overflow = 'hidden';
+      lastFocused = document.activeElement;
+      lightbox.querySelector('.gallery-close').focus();
+    }
+
+    function close() {
+      lightbox.hidden = true;
+      document.body.style.overflow = '';
+      if (lastFocused && typeof lastFocused.focus === 'function') {
+        lastFocused.focus();
+      }
+    }
+
+    function next() { open((current + 1) % figures.length); }
+    function prev() { open((current - 1 + figures.length) % figures.length); }
+
+    galleryRoot.addEventListener('click', e => {
+      const btn = e.target.closest('.screenshot-thumb');
+      if (!btn) return;
+      const fig = btn.closest('.wporg-screenshot');
+      if (!fig) return;
+      const idx = figures.indexOf(fig);
+      open(idx);
+    });
+
+    lightbox.addEventListener('click', e => {
+      const actionBtn = e.target.closest('[data-action]');
+      if (!actionBtn) return;
+      const action = actionBtn.getAttribute('data-action');
+      switch (action) {
+        case 'close': close(); break;
+        case 'prev': prev(); break;
+        case 'next': next(); break;
+      }
+    });
+
+    document.addEventListener('keydown', e => {
+      if (lightbox.hidden) return;
+      switch (e.key) {
+        case 'Escape': close(); break;
+        case 'ArrowRight': next(); break;
+        case 'ArrowLeft': prev(); break;
+      }
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initGallery);
+  } else {
+    initGallery();
+  }
+
   // Watch for theme changes
   const observer = new MutationObserver(function(mutations) {
     mutations.forEach(function(mutation) {

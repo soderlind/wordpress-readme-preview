@@ -204,12 +204,27 @@ export class HtmlGenerator {
     if (Object.keys(captions).length === 0) {
       return '';
     }
-    const items = assets.screenshots.map(s => {
+    const items = assets.screenshots.map((s, idx) => {
       const caption = captions[s.index] ? this.escapeHtml(captions[s.index]) : `Screenshot ${s.index}`;
       const src = s.uri.toString();
-      return `<figure class="wporg-screenshot"><img src="${src}" alt="${caption}" /><figcaption>${caption}</figcaption></figure>`;
+      return `<figure class="wporg-screenshot" data-index="${idx}"><button class="screenshot-thumb" aria-label="Open screenshot ${s.index}"><img src="${src}" alt="${caption}" /></button><figcaption>${caption}</figcaption></figure>`;
     }).join('');
-    return `<div class="wporg-screenshots">${items}</div>`;
+    // Lightbox container appended (hidden by default) once per gallery
+    const lightbox = `
+      <div class="wporg-gallery-lightbox" role="dialog" aria-modal="true" aria-label="Screenshot gallery" hidden>
+        <div class="wporg-gallery-backdrop" data-action="close"></div>
+        <div class="wporg-gallery-content">
+          <button class="gallery-close" data-action="close" aria-label="Close gallery">×</button>
+          <button class="gallery-nav prev" data-action="prev" aria-label="Previous screenshot">‹</button>
+          <button class="gallery-nav next" data-action="next" aria-label="Next screenshot">›</button>
+          <figure class="gallery-current">
+            <img class="gallery-image" alt="" />
+            <figcaption class="gallery-caption"></figcaption>
+          </figure>
+          <div class="gallery-counter" aria-live="polite"></div>
+        </div>
+      </div>`;
+    return `<div class="wporg-screenshots" data-gallery>${items}</div>${lightbox}`;
   }
 
   private generateValidationSummary(validation: ValidationResult): string {
