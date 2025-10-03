@@ -2,7 +2,7 @@
 	"name": "wordpress-readme-preview",
 	"displayName": "WordPress Readme Preview",
 	"description": "Preview WordPress readme.txt files with accurate rendering and validation",
-	"version": "0.1.0",
+	"version": "0.1.1",
 	"publisher": "persoderlind",
 	"engines": {
 		"vscode": "^1.74.0"
@@ -167,7 +167,11 @@
 				},
 				"wordpress-readme.preview.backgroundMode": {
 					"type": "string",
-					"enum": ["auto", "light", "dark"],
+					"enum": [
+						"auto",
+						"light",
+						"dark"
+					],
 					"default": "auto",
 					"description": "Controls preview background: 'auto' follows editor theme, or force 'light' / 'dark' for the preview panel only"
 				},
