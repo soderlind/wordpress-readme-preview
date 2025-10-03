@@ -30,6 +30,12 @@ export class HtmlGenerator {
     (this as any).lastParsedReadmeSections = readme.sections;
     const { webview, extensionUri } = options;
     const theme = options.theme || 'classic';
+    // Persist theme & raw assets for downstream helpers
+    (this as any)._currentTheme = theme;
+    (this as any)._rawAssets = options.assets;
+    // Pre-convert asset URIs to webview URIs for safe embedding
+    const processedAssets = this.processAssetsForWebview(options.assets, webview);
+    (this as any)._currentAssets = processedAssets;
     
     // Get URIs for resources
     const styleUri = webview.asWebviewUri(
@@ -41,7 +47,7 @@ export class HtmlGenerator {
 
     const nonce = this.getNonce();
 
-    return `
+    const rawHtml = `
       <!DOCTYPE html>
       <html lang="en">
       <head>
@@ -67,22 +73,42 @@ export class HtmlGenerator {
       <body>
         <div class="readme-preview theme-${theme}">
           ${theme === 'wordpress-org' 
-            ? this.generateTabbedLayout(readme, validation, options.assets) 
+            ? this.generateTabbedLayout(readme, validation, processedAssets) 
             : `${this.generateValidationSummary(validation)}${this.generateHeader(readme.header, validation)}${this.generateSections(readme.sections)}`}
         </div>
         <script nonce="${nonce}" src="${scriptUri}"></script>
       </body>
       </html>
     `;
+    // Post-process relative <img> paths for classic or tabbed content
+    return this.rewriteRelativeImageSources(rawHtml, options);
+  }
+
+  private processAssetsForWebview(assets: PluginAssets | undefined, webview: vscode.Webview): PluginAssets | undefined {
+    if (!assets) return undefined;
+    const clone: PluginAssets = { assetDirs: assets.assetDirs, screenshots: [], icons: {} };
+    if (assets.banner) {
+      clone.banner = { };
+      if (assets.banner.large) clone.banner.large = webview.asWebviewUri(assets.banner.large);
+      if (assets.banner.small) clone.banner.small = webview.asWebviewUri(assets.banner.small);
+    }
+    if (assets.icons) {
+      for (const k of Object.keys(assets.icons)) {
+        clone.icons![k] = webview.asWebviewUri(assets.icons[k]);
+      }
+    }
+    if (assets.screenshots) {
+      clone.screenshots = assets.screenshots.map(s => ({ ...s, uri: webview.asWebviewUri(s.uri) }));
+    }
+    return clone;
   }
 
   private generateTabbedLayout(readme: ParsedReadme, validation: ValidationResult, assets?: PluginAssets): string {
-    // Placeholder implementation: will be replaced with full tabbed markup
+    // Tabs no longer include separate screenshots; gallery appended to Description panel
     const tabs = [
       { id: 'description', title: 'Description' },
       { id: 'installation', title: 'Installation' },
       { id: 'faq', title: 'FAQ' },
-      { id: 'screenshots', title: 'Screenshots' },
       { id: 'changelog', title: 'Changelog' }
     ];
 
@@ -100,11 +126,12 @@ export class HtmlGenerator {
     const tabButtons = tabs.map((t, i) => `<button role="tab" class="wporg-tab ${i===0?'active':''}" aria-selected="${i===0}" aria-controls="panel-${t.id}" id="tab-${t.id}">${t.title}</button>`).join('');
     const panels = tabs.map((t, i) => {
       let content = '';
-      if (t.id === 'screenshots') {
-        content = this.renderScreenshots(assets);
-      } else if (sectionMap[t.title.toLowerCase()]) {
-        // Extract only inner section content (strip wrapper) for cleaner tab
-        const sectionHtml = sectionMap[t.title.toLowerCase()] || '';
+      if (sectionMap[t.title.toLowerCase()]) {
+        let sectionHtml = sectionMap[t.title.toLowerCase()] || '';
+        if (t.id === 'description' && assets?.screenshots && assets.screenshots.length) {
+          // Append screenshots gallery with anchor for hash #screenshots
+          sectionHtml += `<div id="screenshots" class="screenshots-anchor"></div>${this.renderScreenshots(assets)}`;
+        }
         content = sectionHtml;
       } else {
         content = '<div class="tab-placeholder">No content for this section.</div>';
@@ -133,8 +160,8 @@ export class HtmlGenerator {
     if (!assets || (!assets.banner && (!assets.icons || Object.keys(assets.icons).length === 0))) {
       return '';
     }
-    const bannerUri = assets.banner?.large || assets.banner?.small;
-    const iconUri = this.pickBestIcon(assets.icons);
+  const bannerUri = (assets.banner?.large || assets.banner?.small)?.toString();
+  const iconUri = this.pickBestIcon(assets.icons)?.toString();
     const bannerImg = bannerUri ? `<img class="wporg-banner" src="${bannerUri}" alt="${this.escapeHtml(pluginName)} banner" />` : '';
     const iconImg = iconUri ? `<img class="wporg-icon" src="${iconUri}" alt="${this.escapeHtml(pluginName)} icon" />` : '';
     return `<div class="wporg-asset-header">${bannerImg}${iconImg}</div>`;
@@ -174,7 +201,8 @@ export class HtmlGenerator {
     }
     const items = assets.screenshots.map(s => {
       const caption = captions[s.index] ? this.escapeHtml(captions[s.index]) : `Screenshot ${s.index}`;
-      return `<figure class="wporg-screenshot"><img src="${s.uri}" alt="${caption}" /><figcaption>${caption}</figcaption></figure>`;
+      const src = s.uri.toString();
+      return `<figure class="wporg-screenshot"><img src="${src}" alt="${caption}" /><figcaption>${caption}</figcaption></figure>`;
     }).join('');
     return `<div class="wporg-screenshots">${items}</div>`;
   }
@@ -375,7 +403,13 @@ export class HtmlGenerator {
       allowHTML: false
     });
     
-    const finalContent = WordPressMarkdownParser.processParagraphs(processedContent);
+    let finalContent = WordPressMarkdownParser.processParagraphs(processedContent);
+    // If classic theme and this is the screenshots section, append inline gallery
+    const theme = (this as any)._currentTheme as string;
+    const assets = (this as any)._currentAssets as PluginAssets | undefined;
+    if (theme === 'classic' && sectionId === 'screenshots' && assets?.screenshots && assets.screenshots.length) {
+      finalContent += this.renderScreenshots(assets);
+    }
 
     return `
       <div class="readme-section" id="${sectionId}">
@@ -413,5 +447,20 @@ export class HtmlGenerator {
       text += possible.charAt(Math.floor(Math.random() * possible.length));
     }
     return text;
+  }
+
+  private rewriteRelativeImageSources(html: string, options: HtmlGeneratorOptions): string {
+    const baseDir = vscode.Uri.joinPath(options.resource, '..');
+    return html.replace(/<img\s+[^>]*src=("|')(?!https?:|data:|vscode-resource:|file:)([^"']+?)\1[^>]*>/gi, (match, quote, src) => {
+      // Ignore absolute root-like paths starting with //
+      if (src.startsWith('//')) return match;
+      try {
+        const target = vscode.Uri.joinPath(baseDir, src);
+        const webviewUri = options.webview.asWebviewUri(target).toString();
+        return match.replace(`src=${quote}${src}${quote}`, `src=${quote}${webviewUri}${quote}`);
+      } catch {
+        return match; // fallback on failure
+      }
+    });
   }
 }

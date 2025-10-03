@@ -59,6 +59,9 @@ Deferred mode (`?defer=1`) returns HTTP 202 immediately and processes in backgro
 
 Plugin updates are handled automatically via GitHub. No need to manually download and install updates.
 
+== Screenshots ==
+1. Network Admin > Plugins > All Sites Cron
+2. Example GitHub Actions output
 
 == Changelog ==
 

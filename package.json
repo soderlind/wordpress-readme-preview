@@ -167,7 +167,7 @@
 				},
 				"wordpress-readme.preview.syncScrolling": {
 					"type": "boolean",
-					"default": true,
+					"default": false,
 					"description": "Synchronize scrolling between editor and preview"
 				},
 				"wordpress-readme.preview.theme": {
