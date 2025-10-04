@@ -1,8 +1,8 @@
 {
 	"name": "wordpress-readme-preview",
-	"displayName": "WordPress Readme Preview",
-	"description": "Preview WordPress readme.txt files with accurate rendering and validation",
-	"version": "0.1.3",
+	"displayName": "WordPress Readme",
+	"description": "Preview, validate, and edit WordPress readme.txt files with syntax highlighting, IntelliSense, and accurate rendering",
+	"version": "0.1.4",
 	"publisher": "persoderlind",
 	"engines": {
 		"vscode": "^1.74.0"
@@ -21,7 +21,10 @@
 		"validation",
 		"wordpress.org",
 		"wp-plugin",
-		"readme.txt"
+		"readme.txt",
+		"syntax highlighting",
+		"intellisense",
+		"autocomplete"
 	],
 	"license": "GPL-2.0-or-later",
 	"repository": {

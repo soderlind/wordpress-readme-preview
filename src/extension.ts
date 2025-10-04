@@ -97,9 +97,19 @@ export function activate(context: vscode.ExtensionContext) {
         if (/==\s.*==/.test(line)) {
           return undefined;
         }
+        
+        // Check if we already have opening '==' - if so, only insert name and closing ==
+        const hasOpeningEquals = prefix.includes('==');
+        
         return SECTION_HEADINGS.map(h => {
           const item = new vscode.CompletionItem(h, vscode.CompletionItemKind.Module);
-          item.insertText = `== ${h} ==`;
+          if (hasOpeningEquals) {
+            // User already typed '==', just insert ' SectionName =='
+            item.insertText = ` ${h} ==`;
+          } else {
+            // Insert full format
+            item.insertText = `== ${h} ==`;
+          }
           item.detail = 'WordPress readme section';
           item.sortText = '0_' + h;
           return item;
