@@ -1,6 +1,6 @@
-# WordPress Readme Preview
+# WordPress Readme
 
-A Visual Studio Code extension that provides live preview and validation for WordPress plugin `readme.txt` files with pixel-perfect WordPress.org rendering and comprehensive compliance checking.
+A Visual Studio Code extension that provides syntax highlighting, IntelliSense, live preview and validation for WordPress plugin `readme.txt` files with pixel-perfect WordPress.org rendering and comprehensive compliance checking.
 
 ## Features
 
