@@ -1,4 +1,8 @@
 # Changelog
+## [0.1.7] - 2025-10-05
+### Fixed
+- wordpress.org tabbed theme now detects FAQ content even when the section is titled "Frequently Asked Questions" or appears out of the typical order. Sections are scanned globally and mapped to canonical tabs (description, installation, faq, changelog) irrespective of order.
+
 
 All notable changes to this project will be documented in this file.
 
@@ -71,6 +75,7 @@ The format is based on Keep a Changelog (https://keepachangelog.com/en/1.0.0/) a
 - Custom parser for WordPress readme formatting (FAQ, changelog headers, etc.)
 
 [0.1.6]: https://github.com/soderlind/wordpress-readme-preview/compare/v0.1.5...v0.1.6
+[0.1.7]: https://github.com/soderlind/wordpress-readme-preview/compare/v0.1.6...v0.1.7
 [0.1.4]: https://github.com/soderlind/wordpress-readme-preview/compare/v0.1.3...v0.1.4
 [0.1.5]: https://github.com/soderlind/wordpress-readme-preview/compare/v0.1.4...v0.1.5
 [0.1.3]: https://github.com/soderlind/wordpress-readme-preview/compare/v0.1.1...v0.1.3

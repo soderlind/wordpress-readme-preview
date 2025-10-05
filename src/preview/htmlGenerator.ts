@@ -2,6 +2,7 @@ import * as vscode from 'vscode';
 import { ParsedReadme, ReadmeHeader, ReadmeSection } from '../parser/readmeParser';
 import { ValidationResult, ValidationError } from '../parser/validator';
 import { WordPressMarkdownParser } from '../parser/markdownParser';
+import { canonicalSectionId } from './sectionMapping';
 
 export interface HtmlGeneratorOptions {
   resource: vscode.Uri;
@@ -107,7 +108,7 @@ export class HtmlGenerator {
   }
 
   private generateTabbedLayout(readme: ParsedReadme, validation: ValidationResult, assets?: PluginAssets): string {
-    // Tabs no longer include separate screenshots; gallery appended to Description panel
+    // Desired tab order; will render placeholders for missing canonical sections
     const tabs = [
       { id: 'description', title: 'Description' },
       { id: 'installation', title: 'Installation' },
@@ -115,11 +116,14 @@ export class HtmlGenerator {
       { id: 'changelog', title: 'Changelog' }
     ];
 
-    // Map readme sections to tab panels by simple title matching
-    const sectionMap: { [key: string]: string } = {};
+    // Build canonical section map (supports synonyms like Frequently Asked Questions -> faq)
+    const sectionMap: { [canonical: string]: string } = {};
     for (const section of readme.sections) {
-      const key = section.title.toLowerCase();
-      sectionMap[key] = this.generateSection(section);
+      const canonical = canonicalSectionId(section.title);
+      // First occurrence wins to preserve original ordering content
+      if (!sectionMap[canonical]) {
+        sectionMap[canonical] = this.generateSection(section);
+      }
     }
 
     // Asset header
@@ -129,8 +133,8 @@ export class HtmlGenerator {
     const tabButtons = tabs.map((t, i) => `<button role="tab" class="wporg-tab ${i===0?'active':''}" aria-selected="${i===0}" aria-controls="panel-${t.id}" id="tab-${t.id}">${t.title}</button>`).join('');
     const panels = tabs.map((t, i) => {
       let content = '';
-      if (sectionMap[t.title.toLowerCase()]) {
-        let sectionHtml = sectionMap[t.title.toLowerCase()] || '';
+      if (sectionMap[t.id]) {
+        let sectionHtml = sectionMap[t.id] || '';
         if (t.id === 'description' && assets?.screenshots && assets.screenshots.length) {
           // Append screenshots gallery with heading and anchor for hash #screenshots
           sectionHtml += `<div id="screenshots" class="screenshots-anchor"></div><h2 class="section-title screenshots-title">Screenshots</h2>${this.renderScreenshots(assets)}`;
@@ -404,15 +408,8 @@ export class HtmlGenerator {
   private generateSection(section: ReadmeSection): string {
     const sectionId = this.generateSectionId(section.title);
     // Define canonical alias IDs that tabbed theme expects
-    const canonicalIds: { [key: string]: string } = {
-      'description': 'description',
-      'installation': 'installation',
-      'faq': 'faq',
-      'frequently-asked-questions': 'faq',
-      'screenshots': 'screenshots',
-      'changelog': 'changelog'
-    };
-    const aliasId = canonicalIds[sectionId];
+    const canonicalId = canonicalSectionId(section.title);
+    const aliasId = canonicalId !== sectionId ? canonicalId : undefined;
     
     // Process FAQ questions (= Question =) as H3 headers
     let processedContent = section.content;
