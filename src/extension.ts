@@ -3,6 +3,8 @@ import { ReadmePreviewProvider } from './preview/previewProvider';
 import { HtmlGenerator } from './preview/htmlGenerator';
 import { ReadmeParser } from './parser/readmeParser';
 import { ReadmeValidator } from './parser/validator';
+import { runAutoFix, autoFixReadme } from './autoFix';
+import { registerQuickFixSupport } from './codeActions';
 
 export function activate(context: vscode.ExtensionContext) {
   console.log('WordPress Readme Preview extension activated');
@@ -34,6 +36,35 @@ export function activate(context: vscode.ExtensionContext) {
     'wordpress-readme.validateReadme',
     async (uri?: vscode.Uri) => {
       await validateReadmeFile(uri, outputChannel);
+    }
+  );
+
+  const autoFixCommand = vscode.commands.registerCommand(
+    'wordpress-readme.autoFixMarkdown',
+    async () => {
+      await runAutoFix();
+    }
+  );
+
+  const diffAutoFixCommand = vscode.commands.registerCommand(
+    'wordpress-readme.previewAutoFixDiff',
+    async () => {
+  const editor = vscode.window.activeTextEditor;
+  if (!editor) { return; }
+      const doc = editor.document;
+      const cfg = vscode.workspace.getConfiguration('wordpress-readme');
+      const style = cfg.get<'indented' | 'fenced'>('autoFix.multiLineCodeStyle', 'indented');
+      const original = doc.getText();
+      const result = autoFixReadme(original, { multiLineStyle: style });
+      if (result.updated === original) {
+        vscode.window.showInformationMessage('Auto-fix would make no changes.');
+        return;
+      }
+      const left = doc.uri;
+      const right = vscode.Uri.parse(`${doc.uri.toString()}?autofix=preview`);
+      await vscode.workspace.openTextDocument({ content: result.updated, language: doc.languageId, });
+      // Use built-in diff: original vs transformed
+      await vscode.commands.executeCommand('vscode.diff', left, right, 'Auto-fix Preview');
     }
   );
 
@@ -97,19 +128,16 @@ export function activate(context: vscode.ExtensionContext) {
         if (/==\s.*==/.test(line)) {
           return undefined;
         }
-        
-        // Check if we already have opening '==' - if so, only insert name and closing ==
-        const hasOpeningEquals = prefix.includes('==');
-        
+        // Suppress completion if line already contains a malformed single trailing '=' to avoid duplication
+        // e.g. "== Description =" – we let auto-fix or quick fix handle normalization instead of inserting again
+        if (/==\s+[^=]+=$/.test(line.trim())) {
+          return undefined;
+        }
+        const hasOpeningEquals = true; // by definition we matched starting '=='
         return SECTION_HEADINGS.map(h => {
           const item = new vscode.CompletionItem(h, vscode.CompletionItemKind.Module);
-          if (hasOpeningEquals) {
-            // User already typed '==', just insert ' SectionName =='
-            item.insertText = ` ${h} ==`;
-          } else {
-            // Insert full format
-            item.insertText = `== ${h} ==`;
-          }
+          // Always insert space + heading + closing since opening == is already typed
+          item.insertText = ` ${h} ==`;
           item.detail = 'WordPress readme section';
           item.sortText = '0_' + h;
           return item;
@@ -141,6 +169,8 @@ export function activate(context: vscode.ExtensionContext) {
     showPreviewCommand,
     showPreviewToSideCommand,
     validateReadmeCommand,
+  autoFixCommand,
+  diffAutoFixCommand,
     documentProviderRegistration,
     onDidOpenTextDocument,
     onDidChangeActiveTextEditor,
@@ -151,6 +181,9 @@ export function activate(context: vscode.ExtensionContext) {
     previewProvider,
     diagnosticCollection
   );
+
+  // Register quick fix support
+  registerQuickFixSupport(context);
 
   // Show welcome message for first-time users
   showWelcomeMessage(context);
@@ -281,7 +314,10 @@ function showDiagnostics(document: vscode.TextDocument, validation: any): void {
       error.message,
       error.type === 'error' ? vscode.DiagnosticSeverity.Error : vscode.DiagnosticSeverity.Warning
     );
-
+    // Expose suggestion via .code so code actions can retrieve it without casting
+    if (error.suggestion) {
+      diagnostic.code = error.suggestion;
+    }
     diagnostic.source = 'WordPress Readme';
     diagnostics.push(diagnostic);
   });

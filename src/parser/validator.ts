@@ -348,6 +348,52 @@ export class ReadmeValidator {
 
   private static validateContent(readme: ParsedReadme, errors: ValidationError[], warnings: ValidationWarning[]): void {
     const lines = readme.rawContent.split('\n');
+    // Detect malformed headers (must happen early so user sees structural issues first)
+    // Valid patterns we allow elsewhere:
+    //  - === Plugin Name === (top plugin name header handled in parser)
+    //  - == Section Title == (section headers)
+    //  - = Sub Item = (FAQ / Changelog inner headings)
+    // Anything that starts with '=' but does not fully match one of these should be flagged.
+    const validHeaderPatterns = [
+      /^===\s+.+?\s+===$/,   // plugin main title
+      /^==\s+.+?\s+==$/,     // section heading
+      /^=\s+.+?\s+=$/        // inner heading (FAQ questions, changelog versions)
+    ];
+
+    lines.forEach((line, index) => {
+      if (!line.includes('=')) return; // skip quickly
+      const trimmed = line.trim();
+      if (!trimmed.startsWith('=')) return; // only interested in lines beginning with '=' after trim
+
+      const isValid = validHeaderPatterns.some(r => r.test(trimmed));
+      if (!isValid) {
+        // Examples of malformed lines we want to catch:
+        //  '== Description =' (missing trailing '=')
+        //  '= Title' (missing trailing '=')
+        //  '==Section==' (missing spaces)
+        //  '=Title=' (missing spaces around title)
+        //  '==== Something ===' (wrong number of leading/trailing '=')
+        // Provide a suggestion attempting to normalize.
+        let suggestion: string | undefined;
+        const coreText = trimmed.replace(/^[=]+\s*/, '').replace(/\s*[=]+$/, '').trim();
+        if (trimmed.startsWith('===')) {
+          // Probably intended main plugin header
+            suggestion = `=== ${coreText} ===`;
+        } else if (trimmed.startsWith('==')) {
+          suggestion = `== ${coreText} ==`;
+        } else {
+          suggestion = `= ${coreText} =`;
+        }
+        errors.push({
+          type: 'error',
+          message: 'Malformed readme heading syntax',
+          line: index + 1,
+          column: 0,
+          endColumn: line.length,
+          suggestion: `Use proper heading format, e.g. "${suggestion}"`
+        });
+      }
+    });
     
     // Check for promotional language - use word boundaries to avoid false positives
     const promotionalWords = ['best', 'ultimate', 'premium', 'advanced', 'professional'];
@@ -383,6 +429,123 @@ export class ReadmeValidator {
         });
       }
     });
+
+    // Heuristic Markdown-ish validation (WordPress directory style)
+    // 1. Unclosed / unmatched fenced code blocks (``` or ```lang)
+    const fenceIndices: number[] = [];
+    lines.forEach((line, idx) => {
+      if (/^```/.test(line.trim())) {
+        fenceIndices.push(idx);
+      }
+    });
+    if (fenceIndices.length % 2 === 1) {
+      const last = fenceIndices[fenceIndices.length - 1];
+      warnings.push({
+        type: 'warning',
+        message: 'Unclosed fenced code block (```)',
+        line: last + 1,
+        suggestion: 'Close the fenced block or convert to indented / inline code for WordPress'
+      });
+    }
+
+    // 2. Heading style misuse (# heading)
+    lines.forEach((line, idx) => {
+      if (/^\s*#+\s+/.test(line) && !/^\s*#\s*\[?\!/.test(line)) { // basic detection
+        warnings.push({
+          type: 'warning',
+          message: 'Hash (#) style headings are not standard in WordPress plugin readme',
+          line: idx + 1,
+          suggestion: 'Use == Section == or = Sub Item = syntax instead'
+        });
+      }
+    });
+
+    // 3. Unmatched emphasis markers (simple heuristic)
+    const countMatches = (text: string, token: string) => (text.match(new RegExp(token.replace(/([*~`])/g,'\\$1'),'g')) || []).length;
+    const totalDoubleAsterisk = countMatches(readme.rawContent, '**');
+    if (totalDoubleAsterisk % 2 === 1) {
+      warnings.push({
+        type: 'warning',
+        message: 'Unbalanced bold markers (**)',
+        suggestion: 'Ensure bold sections use pairs of ** markers'
+      });
+    }
+    const totalSingleAsterisk = countMatches(readme.rawContent.replace(/\*\*/g,''), '\*');
+    if (totalSingleAsterisk % 2 === 1) {
+      warnings.push({
+        type: 'warning',
+        message: 'Unbalanced italic markers (*)',
+        suggestion: 'Ensure italic sections use pairs of * markers'
+      });
+    }
+
+    // 4. Malformed markdown links (missing ]) or )
+    lines.forEach((line, idx) => {
+      // Detect an opening [text]( without closing ) on same line
+      const linkLike = line.match(/\[[^\]]*\]\([^)]*$/);
+      if (linkLike) {
+        warnings.push({
+          type: 'warning',
+          message: 'Possible unclosed markdown link',
+          line: idx + 1,
+          suggestion: 'Close the ) or ensure WordPress compatible formatting'
+        });
+      }
+      // Detect stray [text( or [text] without ( ) properly
+      if (/\[[^\]]*$/.test(line)) {
+        warnings.push({
+          type: 'warning',
+          message: 'Unclosed [ bracket - malformed link or formatting',
+          line: idx + 1
+        });
+      }
+    });
+
+    // 5. Mixed indentation inside code blocks
+    let inFence = false;
+    let blockBuffer: { line: number; text: string }[] = [];
+    for (let i = 0; i < lines.length; i++) {
+      const raw = lines[i];
+      const trimmed = raw.trimEnd();
+      if (/^```/.test(trimmed)) {
+        if (!inFence) {
+          inFence = true;
+          blockBuffer = [];
+        } else {
+          // closing fence - analyze
+          const hasTab = blockBuffer.some(l => /^\t+/.test(l.text));
+          const hasSpace = blockBuffer.some(l => /^ +/.test(l.text));
+          if (hasTab && hasSpace) {
+            warnings.push({
+              type: 'warning',
+              message: 'Mixed tabs and spaces inside fenced code block',
+              line: blockBuffer[0]?.line
+            });
+          }
+          inFence = false;
+        }
+        continue;
+      }
+      // Detect indented code group (4-space) sequences
+      if (!inFence && /^ {4}\S/.test(raw)) {
+        blockBuffer.push({ line: i + 1, text: raw });
+        // continue collecting until pattern breaks
+        if (i + 1 === lines.length || !/^ {4}\S/.test(lines[i + 1])) {
+          const hasTab = blockBuffer.some(l => /^\t+/.test(l.text));
+          const hasSpace = blockBuffer.some(l => /^ +/.test(l.text));
+          if (hasTab && hasSpace) {
+            warnings.push({
+              type: 'warning',
+              message: 'Mixed indentation inside indented code block',
+              line: blockBuffer[0].line
+            });
+          }
+          blockBuffer = [];
+        }
+      } else if (inFence) {
+        blockBuffer.push({ line: i + 1, text: raw });
+      }
+    }
 
     // Check for actual email addresses, not just the word "email"
     const emailPattern = /\b[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}\b/g;

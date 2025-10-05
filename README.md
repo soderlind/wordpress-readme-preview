@@ -2,6 +2,8 @@
 
 A Visual Studio Code extension that provides syntax highlighting, IntelliSense, live preview and validation for WordPress plugin `readme.txt` files with pixel-perfect WordPress.org rendering and comprehensive compliance checking.
 
+> Update 0.1.5: Improved heading normalization automatically converts hash-style (`#`, `##`, `###`) and malformed equals headings (`== Title =`, `= Title`) into proper WordPress readme format (`== Section ==` / `= Subsection =`) — including edge cases like `##Title`, `#  Title  `, and `# Title #`. Quick fixes now mirror this logic exactly.
+
 ## Features
 
 ✅ **Live Preview** - Real-time rendering matching WordPress.org appearance  
