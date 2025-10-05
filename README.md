@@ -152,6 +152,7 @@ Tags are rendered as simple uppercase bracketed items (e.g. `[SEO] [CACHE]`) for
 | `WordPress Readme: Open Preview` | Command Palette, Context Menu | Open preview in current editor group |
 | `WordPress Readme: Open Preview to the Side` | Toolbar, Context Menu | Open side-by-side preview |
 | `WordPress Readme: Validate Readme` | Context Menu, Command Palette | Run validation and show detailed results |
+| `WordPress Readme: Auto-fix Markdown to WordPress style` | Command Palette | Apply safe formatting fixes (normalize headings, code blocks, spacing) |
 
 ## Context Menu Integration
 
