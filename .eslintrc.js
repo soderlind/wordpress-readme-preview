@@ -9,9 +9,25 @@ module.exports = {
     '@typescript-eslint',
   ],
   rules: {
-    '@typescript-eslint/naming-convention': 'warn',
+    '@typescript-eslint/naming-convention': [
+      'warn',
+      {
+        selector: 'variable',
+        format: ['camelCase', 'UPPER_CASE', 'PascalCase'],
+        leadingUnderscore: 'allow'
+      },
+      {
+        selector: 'variableLike',
+        format: ['camelCase', 'UPPER_CASE', 'PascalCase']
+      },
+      {
+        selector: 'typeLike',
+        format: ['PascalCase']
+      }
+    ],
     '@typescript-eslint/semi': 'warn',
-    'curly': 'warn',
+  // Disable mandatory curly braces for single-line statements to reduce noise
+  'curly': 'off',
     'eqeqeq': 'warn',
     'no-throw-literal': 'warn',
     'semi': 'off',
