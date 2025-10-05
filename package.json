@@ -96,12 +96,6 @@
 				"title": "Auto-fix Markdown to WordPress style",
 				"category": "WordPress Readme",
 				"icon": "$(wand)"
-			},
-			{
-				"command": "wordpress-readme.previewAutoFixDiff",
-				"title": "Preview Auto-fix Diff",
-				"category": "WordPress Readme",
-				"icon": "$(diff)"
 			}
 		],
 		"menus": {
