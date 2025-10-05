@@ -44,7 +44,6 @@
 		"onLanguage:readme-txt",
 		"onCommand:wordpress-readme.showPreview",
 		"onCommand:wordpress-readme.showPreviewToSide",
-		"onCommand:wordpress-readme.previewAutoFixDiff",
 		"onWebviewPanel:wordpress-readme-preview"
 	],
 	"main": "./out/extension.js",

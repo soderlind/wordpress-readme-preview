@@ -46,27 +46,6 @@ export function activate(context: vscode.ExtensionContext) {
     }
   );
 
-  const diffAutoFixCommand = vscode.commands.registerCommand(
-    'wordpress-readme.previewAutoFixDiff',
-    async () => {
-  const editor = vscode.window.activeTextEditor;
-  if (!editor) { return; }
-      const doc = editor.document;
-      const cfg = vscode.workspace.getConfiguration('wordpress-readme');
-      const style = cfg.get<'indented' | 'fenced'>('autoFix.multiLineCodeStyle', 'indented');
-      const original = doc.getText();
-      const result = autoFixReadme(original, { multiLineStyle: style });
-      if (result.updated === original) {
-        vscode.window.showInformationMessage('Auto-fix would make no changes.');
-        return;
-      }
-      const left = doc.uri;
-      const right = vscode.Uri.parse(`${doc.uri.toString()}?autofix=preview`);
-      await vscode.workspace.openTextDocument({ content: result.updated, language: doc.languageId, });
-      // Use built-in diff: original vs transformed
-      await vscode.commands.executeCommand('vscode.diff', left, right, 'Auto-fix Preview');
-    }
-  );
 
   // Register text document content provider for custom scheme if needed
   const documentProvider = new ReadmeDocumentProvider();
@@ -170,7 +149,6 @@ export function activate(context: vscode.ExtensionContext) {
     showPreviewToSideCommand,
     validateReadmeCommand,
   autoFixCommand,
-  diffAutoFixCommand,
     documentProviderRegistration,
     onDidOpenTextDocument,
     onDidChangeActiveTextEditor,
