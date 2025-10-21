@@ -461,7 +461,10 @@ export class ReadmeValidator {
     });
 
     // 3. Unmatched emphasis markers (simple heuristic)
-    const countMatches = (text: string, token: string) => (text.match(new RegExp(token.replace(/([*~`])/g,'\\$1'),'g')) || []).length;
+    function escapeRegExp(s: string): string {
+      return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    }
+    const countMatches = (text: string, token: string) => (text.match(new RegExp(escapeRegExp(token),'g')) || []).length;
     const totalDoubleAsterisk = countMatches(readme.rawContent, '**');
     if (totalDoubleAsterisk % 2 === 1) {
       warnings.push({

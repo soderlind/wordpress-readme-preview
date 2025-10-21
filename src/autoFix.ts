@@ -74,7 +74,9 @@ export function autoFixReadme(raw: string, options?: { multiLineStyle?: 'indente
       } else if (block.length === 1) {
         // single line -> inline code
         const content = block[0].trim();
-        const inline = '`' + content.replace(/`/g, '\\`') + '`';
+        // Escape backslashes, then backticks
+        const escapedContent = content.replace(/\\/g, '\\\\').replace(/`/g, '\\`');
+        const inline = '`' + escapedContent + '`';
         output.push(inline);
         changes.push(`Converted single-line fenced block at line ${startIndex + 1} to inline code`);
       } else {
