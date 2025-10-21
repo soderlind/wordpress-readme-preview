@@ -3,6 +3,15 @@
 ### Fixed
 - wordpress.org tabbed theme now detects FAQ content even when the section is titled "Frequently Asked Questions" or appears out of the typical order. Sections are scanned globally and mapped to canonical tabs (description, installation, faq, changelog) irrespective of order.
 
+## [0.1.8] - 2025-10-21
+### Fixed
+- Auto-fix single-line fenced code now safely escapes backslashes before backticks preventing malformed inline code when content contains `\` and `` ` `` characters.
+- Validator emphasis balancing logic now uses a robust regex escape preventing false positives on tokens with special regex metacharacters.
+### Changed
+- README cleaned: removed outdated 0.1.5 update banner to keep intro concise.
+### Security
+- Addresses code scanning warning related to incomplete string escaping for inline code conversion and emphasis token detection.
+
 
 All notable changes to this project will be documented in this file.
 
@@ -76,6 +85,7 @@ The format is based on Keep a Changelog (https://keepachangelog.com/en/1.0.0/) a
 
 [0.1.6]: https://github.com/soderlind/wordpress-readme-preview/compare/v0.1.5...v0.1.6
 [0.1.7]: https://github.com/soderlind/wordpress-readme-preview/compare/v0.1.6...v0.1.7
+[0.1.8]: https://github.com/soderlind/wordpress-readme-preview/compare/v0.1.7...v0.1.8
 [0.1.4]: https://github.com/soderlind/wordpress-readme-preview/compare/v0.1.3...v0.1.4
 [0.1.5]: https://github.com/soderlind/wordpress-readme-preview/compare/v0.1.4...v0.1.5
 [0.1.3]: https://github.com/soderlind/wordpress-readme-preview/compare/v0.1.1...v0.1.3
