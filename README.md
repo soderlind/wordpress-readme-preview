@@ -2,6 +2,10 @@
 
 A Visual Studio Code extension that provides syntax highlighting, IntelliSense, live preview and validation for WordPress plugin `readme.txt` files with pixel-perfect WordPress.org rendering and comprehensive compliance checking.
 
+## Avaliable at
+- [Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=persoderlind.wordpress-readme-preview)
+- [Open VSX Registry](https://open-vsx.org/extension/persoderlind/wordpress-readme-preview)
+
 ## Features
 
 ✅ **Live Preview** - Real-time rendering matching WordPress.org appearance  
