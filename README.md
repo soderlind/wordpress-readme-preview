@@ -62,11 +62,14 @@ A Visual Studio Code extension that provides syntax highlighting, IntelliSense, 
 - ✅ Plugin Name (`=== Plugin Name ===`)
 - ✅ Contributors (WordPress.org usernames)
 - ✅ Tags (1-5 recommended tags)
-- ✅ Requires at least (WordPress version)
 - ✅ Tested up to (WordPress version)  
 - ✅ Stable tag (plugin version)
 - ✅ License (GPL-compatible)
 - ✅ Short description (≤150 characters)
+
+Optional (still parsed & format-validated if present):
+- ℹ️ Requires at least (WordPress version)
+- ℹ️ Requires PHP (minimum PHP version)
 
 **Advanced Content Validation:**
 - 🎯 **Precise Error Positioning** - Exact line/column highlighting

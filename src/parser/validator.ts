@@ -26,7 +26,6 @@ export class ReadmeValidator {
     'pluginName',
     'contributors',
     'tags',
-    'requiresAtLeast',
     'testedUpTo',
     'stableTag',
     'license',

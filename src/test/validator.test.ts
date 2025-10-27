@@ -11,7 +11,7 @@ const headerLines = [
 	'=== Plugin Name ===',
 	'Contributors: john, jane',
 	'Tags: tag1, tag2',
-	'Requires at least: 1.0',
+	// 'Requires at least' intentionally omitted to confirm optional handling
 	'Tested up to: 6.5',
 	'Stable tag: 1.0.0',
 	'License: GPL',
@@ -65,6 +65,12 @@ describe('ReadmeValidator', () => {
 		const txt = missingHeader.concat(['== Description ==', 'Body']).join('\n');
 		const r = validate(txt);
 		expect(r.errors.some(e => /Contributors is required/.test(e.message))).toBe(true);
+	});
+
+	it('does not error when Requires at least is absent', () => {
+		const txt = build(['== Description ==', 'Body']);
+		const r = validate(txt);
+		expect(r.errors.some(e => /Requires at least field is required/.test(e.message))).toBe(false);
 	});
 
 	it('produces high score and no errors on clean input', () => {
