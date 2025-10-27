@@ -1,7 +1,6 @@
 === All Sites Cron ===
 Contributors: PerS
 Tags: cron, multisite, wp-cron,redis
-Requires at least: 6.7
 Tested up to: 6.8
 Stable tag: 1.5.3
 License: GPLv2 or later
