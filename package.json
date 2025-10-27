@@ -2,7 +2,7 @@
 	"name": "wordpress-readme-preview",
 	"displayName": "WordPress Readme",
 	"description": "Preview, validate, and edit WordPress readme.txt files with syntax highlighting, IntelliSense, and accurate rendering",
-	"version": "0.1.8",
+	"version": "0.1.9",
 	"publisher": "persoderlind",
 	"engines": {
 		"vscode": "^1.74.0"

@@ -3,10 +3,10 @@ export interface ReadmeHeader {
   contributors: string[];
   donateLink?: string;
   tags: string[];
-  requiresAtLeast: string;
+  requiresAtLeast: string; // now optional (empty string allowed)
   testedUpTo: string;
   stableTag: string;
-  requiresPHP?: string;
+  requiresPHP?: string; // optional
   license: string;
   licenseURI?: string;
   shortDescription: string;
@@ -245,9 +245,7 @@ export class ReadmeParser {
       result.warnings.push('Maximum 5 tags recommended');
     }
 
-    if (!header.requiresAtLeast) {
-      result.errors.push('Requires at least field is required');
-    }
+    // 'Requires at least' no longer mandatory; only validate format if present
 
     if (!header.testedUpTo) {
       result.errors.push('Tested up to field is required');

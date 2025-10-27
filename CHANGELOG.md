@@ -12,6 +12,12 @@
 ### Security
 - Addresses code scanning warning related to incomplete string escaping for inline code conversion and emphasis token detection.
 
+## [0.1.9] - 2025-10-27
+### Changed
+- "Requires at least" and "Requires PHP" header fields are now optional. Format validation still applies if provided.
+### Documentation
+- README updated to reflect new optional status of these fields.
+
 
 All notable changes to this project will be documented in this file.
 
@@ -86,6 +92,7 @@ The format is based on Keep a Changelog (https://keepachangelog.com/en/1.0.0/) a
 [0.1.6]: https://github.com/soderlind/wordpress-readme-preview/compare/v0.1.5...v0.1.6
 [0.1.7]: https://github.com/soderlind/wordpress-readme-preview/compare/v0.1.6...v0.1.7
 [0.1.8]: https://github.com/soderlind/wordpress-readme-preview/compare/v0.1.7...v0.1.8
+[0.1.9]: https://github.com/soderlind/wordpress-readme-preview/compare/v0.1.8...v0.1.9
 [0.1.4]: https://github.com/soderlind/wordpress-readme-preview/compare/v0.1.3...v0.1.4
 [0.1.5]: https://github.com/soderlind/wordpress-readme-preview/compare/v0.1.4...v0.1.5
 [0.1.3]: https://github.com/soderlind/wordpress-readme-preview/compare/v0.1.1...v0.1.3
