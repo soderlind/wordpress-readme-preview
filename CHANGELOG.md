@@ -1,12 +1,18 @@
 # Changelog
 
+All notable changes to this project will be documented in this file.
+
+The format is based on Keep a Changelog (https://keepachangelog.com/en/1.0.0/) and this project adheres to Semantic Versioning (https://semver.org/spec/v2.0.0.html).
+
 ## [0.2.0] - 2025-12-10
 ### Added
 - Support for `icon.svg` in asset preview (scalable vector icons now preferred over raster icons)
 
-## [0.1.7] - 2025-10-05
-### Fixed
-- wordpress.org tabbed theme now detects FAQ content even when the section is titled "Frequently Asked Questions" or appears out of the typical order. Sections are scanned globally and mapped to canonical tabs (description, installation, faq, changelog) irrespective of order.
+## [0.1.9] - 2025-10-27
+### Changed
+- "Requires at least" and "Requires PHP" header fields are now optional. Format validation still applies if provided.
+### Documentation
+- README updated to reflect new optional status of these fields.
 
 ## [0.1.8] - 2025-10-21
 ### Fixed
@@ -17,16 +23,9 @@
 ### Security
 - Addresses code scanning warning related to incomplete string escaping for inline code conversion and emphasis token detection.
 
-## [0.1.9] - 2025-10-27
-### Changed
-- "Requires at least" and "Requires PHP" header fields are now optional. Format validation still applies if provided.
-### Documentation
-- README updated to reflect new optional status of these fields.
-
-
-All notable changes to this project will be documented in this file.
-
-The format is based on Keep a Changelog (https://keepachangelog.com/en/1.0.0/) and this project adheres to Semantic Versioning (https://semver.org/spec/v2.0.0.html).
+## [0.1.7] - 2025-10-05
+### Fixed
+- wordpress.org tabbed theme now detects FAQ content even when the section is titled "Frequently Asked Questions" or appears out of the typical order. Sections are scanned globally and mapped to canonical tabs (description, installation, faq, changelog) irrespective of order.
 
 ## [0.1.6] - 2025-10-05
 ### Removed
@@ -94,11 +93,12 @@ The format is based on Keep a Changelog (https://keepachangelog.com/en/1.0.0/) a
 - Context menu integration across explorer, editor tab, and editor content
 - Custom parser for WordPress readme formatting (FAQ, changelog headers, etc.)
 
-[0.1.6]: https://github.com/soderlind/wordpress-readme-preview/compare/v0.1.5...v0.1.6
-[0.1.7]: https://github.com/soderlind/wordpress-readme-preview/compare/v0.1.6...v0.1.7
-[0.1.8]: https://github.com/soderlind/wordpress-readme-preview/compare/v0.1.7...v0.1.8
+[0.2.0]: https://github.com/soderlind/wordpress-readme-preview/compare/v0.1.9...v0.2.0
 [0.1.9]: https://github.com/soderlind/wordpress-readme-preview/compare/v0.1.8...v0.1.9
-[0.1.4]: https://github.com/soderlind/wordpress-readme-preview/compare/v0.1.3...v0.1.4
+[0.1.8]: https://github.com/soderlind/wordpress-readme-preview/compare/v0.1.7...v0.1.8
+[0.1.7]: https://github.com/soderlind/wordpress-readme-preview/compare/v0.1.6...v0.1.7
+[0.1.6]: https://github.com/soderlind/wordpress-readme-preview/compare/v0.1.5...v0.1.6
 [0.1.5]: https://github.com/soderlind/wordpress-readme-preview/compare/v0.1.4...v0.1.5
+[0.1.4]: https://github.com/soderlind/wordpress-readme-preview/compare/v0.1.3...v0.1.4
 [0.1.3]: https://github.com/soderlind/wordpress-readme-preview/compare/v0.1.1...v0.1.3
 [0.1.1]: https://github.com/soderlind/wordpress-readme-preview/compare/v0.1.0...v0.1.1
