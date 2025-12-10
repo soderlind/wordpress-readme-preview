@@ -1,4 +1,9 @@
 # Changelog
+
+## [0.2.0] - 2025-12-10
+### Added
+- Support for `icon.svg` in asset preview (scalable vector icons now preferred over raster icons)
+
 ## [0.1.7] - 2025-10-05
 ### Fixed
 - wordpress.org tabbed theme now detects FAQ content even when the section is titled "Frequently Asked Questions" or appears out of the typical order. Sections are scanned globally and mapped to canonical tabs (description, installation, faq, changelog) irrespective of order.
