@@ -421,6 +421,7 @@ ReadmePreviewProvider.prototype.collectPluginAssets = async function(resource: v
   const bannerLargeRegex = /^banner-(?:1544x500|1544x500@2x)\.(png|jpe?g)$/i;
   const bannerSmallRegex = /^banner-(?:772x250|772x250@2x)\.(png|jpe?g)$/i;
   const iconRegex = /^icon-(\d{2,3})x\1\.(png|jpe?g|svg)$/i; // icon-256x256.png
+  const iconSvgRegex = /^icon\.svg$/i; // plain icon.svg (scalable, preferred)
   const screenshotRegex = /^screenshot-(\d+)\.(png|jpe?g|gif)$/i;
 
   for (const dir of assetDirs) {
@@ -434,6 +435,9 @@ ReadmePreviewProvider.prototype.collectPluginAssets = async function(resource: v
         } else if (bannerSmallRegex.test(name)) {
           assets.banner = assets.banner || {};
           assets.banner.small = vscode.Uri.joinPath(dir, name);
+        } else if (iconSvgRegex.test(name)) {
+          // Plain icon.svg (scalable) - store under 'svg' key with highest priority
+          assets.icons!['svg'] = vscode.Uri.joinPath(dir, name);
         } else {
           const iconMatch = name.match(iconRegex);
           if (iconMatch) {

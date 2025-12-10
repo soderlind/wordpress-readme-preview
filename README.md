@@ -229,7 +229,7 @@ Search order (first existing directory wins precedence if duplicates):
 
 Supported file patterns (case-insensitive):
 - Banners: `banner-1544x500.(png|jpg)` (large), `banner-772x250.(png|jpg)` (small)
-- Icons: `icon-256x256.*`, `icon-128x128.*`, `icon-64x64.*`, `icon-32x32.*` (`.png`, `.jpg`, `.jpeg`, `.svg`)
+- Icons: `icon.svg` (scalable, preferred), `icon-256x256.*`, `icon-128x128.*`, `icon-64x64.*`, `icon-32x32.*` (`.png`, `.jpg`, `.jpeg`, `.svg`)
 - Screenshots: `screenshot-1.(png|jpg|jpeg|gif)`, `screenshot-2.*`, etc.
 
 The best available icon size is chosen in order: 256 → 128 → 64 → 32. Screenshots are displayed in ascending numerical order.

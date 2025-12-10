@@ -176,7 +176,8 @@ export class HtmlGenerator {
 
   private pickBestIcon(icons: { [size: string]: vscode.Uri } | undefined): vscode.Uri | undefined {
     if (!icons) return undefined;
-    const preferred = ['256','128','64','32'];
+    // Prefer scalable SVG, then largest raster sizes
+    const preferred = ['svg', '256','128','64','32'];
     for (const p of preferred) {
       if (icons[p]) return icons[p];
     }
